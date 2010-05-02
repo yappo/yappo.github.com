@@ -1,0 +1,46 @@
+- profile 3min
+-- nihao
+-- perl hacker
+-- community
+--- shibuya.pm, yokohama.pm, perl-casual, coderepos
+-- writting
+--- web db press
+-- web developer
+--- ficia by etolabo
+---- we says 'iPhoto on the Web'
+- no Shibuya.PM 1min
+-- Shibuya.JS
+--- shibuya.js という物の説明
+--- web開発のためには今やjsは必須
+--- kawanet, takesako も shibuya.js
+-- shibua.pmだって今までperlの事やってないよ！という話
+- 今日の内容
+-- web applicationのjsのテスト手法について
+-- 僕が作っているJSTAPdという、ajaxアプリをテストするためのtoolのお話
+- 既存の問題点 1min
+-- JUnit
+-- Mozilla の
+-- jQuery の
+- 何が欲しいか 1min
+-- we need use to prove command, because we are perl hacker
+-- Test::More like test code
+-- ajax testing
+--- server side のテストも簡単に
+
+- どういう物を作ったか 2min
+-- JSTAPd -  testing framework to test Ajax/Javascript libraries
+-- contributor: daisuke maki a.k.a lestrrat (JPA理事長)
+-- PSGI/Plack, use Twiggy, long polling connection for test progress check
+
+- demo 5min
+-- generate
+-- prove
+-- with jqeury
+--- jqeur を使うとテストが簡単に書ける
+-- with ajax
+
+- development
+-- github:yappo/JSTAPd
+
+- 時間あまっちゃった
+- that's all

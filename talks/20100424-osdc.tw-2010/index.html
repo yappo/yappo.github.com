@@ -1,0 +1,700 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>Ajax application testing</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>我3D醉酒沒修好。<br>諸位好嗎？</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>Ajax application testing</h1>
+
+ <address>Yappo: yappo@<b style="color: red;">shibuya</b>.<b style="color: red;">pl</b><br /> <b style="color: red;">Shibuya</b> . <b style="color: red;">Pl</b>ack Users<br /><i style="font-size: 0.8em;">(Shibuya Perl Mongers)</i></address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Yappo is</h2>
+  <ul>
+   <li>大澤和宏</li>
+   <li>Perl Hacker</li>
+   <li>CPAN Author</li>
+   <li>Farmer</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ separator: 'fade', styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Yappo is</h2>
+  <ul>
+   <li>employee of etolabo</li>
+   <li>The founder of etolabo is founder of mixi</li>
+   <li>mixi is SNS famous for Japan</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>my joining communities</h2>
+  <ul>
+   <li>Shibuya.PM</li>
+   <li>Yokohama.PM</li>
+   <li>perl casual</li>
+   <li>smily hackathon</li>
+   <li>coderepos, perl-users.jp</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>I am writing serialization<br /> for modern<br /> web application<br /> development in japan</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        separator: 'slide',
+        styleBase: 'custom',
+        backgroundImage: 'img/webdb.jpg'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>And</h2>
+  <ul>
+   <li>Web Developer</li>
+   <li>example is ficia.com</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ separator: 'fade', styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ficia.com</p>
+  <script type="text/javascript"> s6.page({ separator: 'fade', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        separator: 'slide',
+        styleBase: 'custom',
+        backgroundImage: 'img/ficia.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/lopnor.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>ficia.com is</h2>
+  <ul>
+   <li>photo storage (not sharing)</li>
+   <li>a lot of ajax code</li>
+   <li>moderate perl code :)</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>we says<br /> "iPhoto on the Web"</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>show ficia.com</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>I am writing<br /> a lot of<br /> ajax code</p>
+  <script type="text/javascript"> s6.page({ separator: 'fade', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>Therefore<br /> my talk is ...</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p><b style="color: red;">no</b> Shibuya.PM</p>
+  <script type="text/javascript"> s6.page({ separator: 'slide', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p><b style="color: red;">use</b> Shibuya.<b style="color: red;">JS</b></p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Shobuya.JS is</h2>
+  <ul>
+   <li>JavaScript comyunity in Japan</li>
+   <li>but, core member lives in <b style="color: red;">Kyoto</b> :)</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>I want to carry out<br> talk about JavaScript !!!</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>However,<br> I am not worried.<br> Because is ...</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>in Shibuya.PM tech talk #9</h2>
+  <ul>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>in Shibuya.PM tech talk #9</h2>
+  <ul>
+    <li>no Puer Perl talks</li>
+    <li>only to XS talks</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>in Shibuya.PM tech talk #11</h2>
+  <ul>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>in Shibuya.PM tech talk #11</h2>
+  <ul>
+    <li style="font-size: 0.8em;">Again, no Puer Perl talks!</li>
+    <li style="font-size: 0.8em;">a lot of assembler talks!</li>
+    <li style="font-size: 0.8em;">a lot of syscall talks!</li>
+    <li style="font-size: 0.8em;">a lot of security talks!</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>in Shibuya.PM tech talk #12</h2>
+  <ul>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>in Shibuya.PM tech talk #12</h2>
+  <ul>
+    <li style="font-size: 0.8em;">a very lot of NoSQL and KVS talks!</li>
+    <li style="font-size: 0.7em;">Tokyo Cabinet, Lux IO, Redis, kumofs, Hadoop/hBase, golang, incline, mysql storage engine, CouchDB</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>I DON'T WORRY !!!!<br>Shibuya.PM is<br> too AMAZING!!!</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>Ajax application testing</h1>
+
+ <address>Yappo: yappo@<b style="color: red;">shibuya</b>.<b style="color: red;">pl</b><br /> <b style="color: red;">Shibuya</b> . <b style="color: red;">Pl</b>ack Users<br /><i style="font-size: 0.8em;">(Shibuya Perl Mongers)</i></address>
+
+ <script type="text/javascript">
+    s6.page({
+        separator: 'slide',
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <h1>Ajax application testing</h1>
+
+ <address>Yappo: yappo@shibuya.pl<br /> <b style="color: red;">Shibuya.JS</b></address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p style="color: red;">注意</p>
+  <script type="text/javascript"> s6.page({ separator: 'fade', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>現在寫這個幻燈片的時候<br>今このスライド書いてる時に</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p style="top: 10px;">12:51 < Sartak> <br>　日本語で発表してw<br><br>(請用日語發表w)<br>(please speaking<br> in japanese lol)</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>因為被說了，跟隨。<br>って言われたので、そうするよ！</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>正編開始</p>
+  <script type="text/javascript"> s6.page({ separator: 'fade', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>今天的內容</h2>
+  <ul>
+   <li>關於使用了Ajax的WebApp的試驗</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>今天的內容</h2>
+  <ul>
+   <li>關於使用了Ajax的WebApp的試驗</li>
+   <li>我製作了的JSTAPd的話</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>到現在為止的問題</h2>
+  <ul>
+   <li>以Perl的流派不能寫試驗</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>到現在為止的問題</h2>
+  <ul>
+   <li>以Perl的流派不能寫試驗</li>
+   <li style="font-size: 0.8em">(Test::More)ish</li>
+   <li>我望prove command使用</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>到現在為止的問題</h2>
+  <ul>
+   <li>以Perl的流派不能寫試驗</li>
+   <li style="font-size: 0.8em">(Test::More)ish</li>
+   <li>我望prove command使用</li>
+   <li>我<b style="color: #f33;">♥</b>歡Perl</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>最大的問題</p>
+  <script type="text/javascript"> s6.page({ separator: 'fade', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ajax application的考試難</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Ajax的課題 for testing</h2>
+  <ul>
+   <li style="font-size: 0.7em">JUnit, UxU, jqUnit and more...</li>
+   <li>我調查了,不過,這是不滿</li>
+   <li>因為是不能合併了server side和client side的試驗</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+ <!-- ===================================================== -->
+
+ <div>
+  <p>我解決了</p>
+  <script type="text/javascript"> s6.page({ separator: 'slide', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>我做了JSTAPd製作</h2>
+  <ul>
+   <li>JSTAPd is testing framework to test Ajax/Javascript libraries</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>JSTAPd's topic</h2>
+  <ul>
+   <li style="font-size: 0.6em;">on the github/CPAN</li>
+   <li>自動地啟動browser</li>
+   <li>在PSGI/Plack上動</li>
+   <li>根據Twiggy進行long polling等試驗完成</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Before Twiggy</h2>
+  <ul>
+   <li>在HTTP::Engine上動</li>
+   <li>到試驗結束每10msec訪問著JSTAPd</li>
+   <li style="font-size: 0.6em;">it was accessing for JSTAPd at 10msec until end of test</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Before Twiggy</h2>
+  <ul>
+   <li>在HTTP::Engine上動</li>
+   <li>到試驗結束每10msec訪問著JSTAPd</li>
+   <li><b style="color: red;">晚喲！/遅いよ!/too heavy!</b></li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>After Twiggy</h2>
+  <ul>
+   <li>為了試驗完成通知的連接只一個</li>
+   <li style="font-size: 0.6em;">connecting JSTAPd for only one session for test finished</li>
+   <li><b style="color: red;">快!</b></li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p style="top: 50px;">對我因為用<br>幻燈片說明在<br>這兒竭盡全力,<br>顯示實際<br>使用的那樣</p>
+  <script type="text/javascript"> s6.page({ separator: 'fade', styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>示威/デモ/DEMO</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>詳細</h2>
+  <ul>
+   <li style="font-size: 0.8em;">perldoc JSTAPd::Tutorial</li>
+   <li style="font-size: 0.8em;">perldoc JSTAPd::Tutorial::Intro</li>
+   <li style="font-size: 0.8em;">perldoc JSTAPd::Tutorial::API</li>
+   <li style="font-size: 0.8em;">perldoc JSTAPd::Tutorial::Test</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>得到方法</h2>
+  <ul>
+   <li style="font-size: 0.8em;">http://github.com/yappo/JSTAPd/</li>
+   <li style="font-size: 0.8em;">http://search.cpan.org/~yappo/JSTAPd/</li>
+   <li>CPAN的東西還舊</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>有り難うございました！</p>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'takahashi'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>
