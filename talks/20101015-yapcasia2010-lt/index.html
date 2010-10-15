@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>Ajax application testing</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>Happy AnySan Hacking!</h1>
+
+ <address>Yappo: yappo あっと shibuya.pl<br /> Shibuya Perl Mongers</address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>今回のYAPCは<br />DeNAさんが<br />スポンサーなので</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>求人PR大使をやってる<br />tsudaさんの<br />コスプレしてきました</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>自己紹介</h2>
+  <ul>
+   <li>大沢和宏</li>
+   <li>Perl Hacker</li>
+   <li>CPAN Author</li>
+   <li>Farmer</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>AnySan is</h2>
+  <ul>
+   <li>AnyEvent based messaging framework</li>
+   <li>that's all</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>near productions</h2>
+  <ul>
+   <li>IKC</li>
+   <li>Bot::BasicBot</li>
+   <li>AnyEvent IRC bot: Morris</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>diff of another productions</h2>
+  <ul>
+   <li>very simple</li>
+   <li>not only irc</li>
+   <li>AnyEvent IRC bot: Morris</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Provider</h2>
+  <ul>
+   <li>handlling of message service</li>
+   <li>ready to IRC and Twitter</li>
+   <li>i wont Skype and Facebook(bat Facebook has not real Streaming API)</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <pre>
+# echo bot
+use AnySan::Provider::IRC;
+my $irc = irc
+ 'chat.freenode.net',
+ nickname => 'AnySan',
+ channels => {
+  '#danthebot' => {},
+ };
+AnySan->register_listener(
+ echo => {
+  cb => sub {
+   my $receive = shift;
+   $receive->send_replay($receive->message);
+  }
+ }
+);
+AnySan->run;
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <pre>
+# echo bot
+use AnySan::Provider::Twitter;
+my $twitter = twitter
+ consumer_key    => ...,
+ consumer_secret => ...,
+ token           => ...,
+ token_secret    => ...,
+ method          => 'filter',
+ track           => $keyword,
+ ;
+AnySan->register_listener(streamer => {
+ event => 'timeline',
+ cb    => sub {
+  my $receive = shift;
+  $receive->send_replay($receive->message);
+ }
+});
+AnySan->run;
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>AnySan::Receive</h2>
+  <ul>
+   <li>メッセージサービスから受け取ったメッセージを抽象化している</li>
+   <li>発言した人のnicknameや発言内容など</li>
+   <li>$receive->send_replay($msg)で、twitterでは発言者にreplay返す</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>RPC系のモジュールと<br />組み合わせて<br />通知系等の能動的なbotも</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <pre>
+# bot server
+use AnyEvent::MPRPC;
+use AnySan::Provider::IRC;
+my $irc = irc
+ 'chat.freenode.net',
+ nickname => 'AnySan1',
+ channels => {
+  '#danthebot' => {},
+ };
+my $server = mprpc_server '127.0.0.1', '4423';
+$server->reg_cb( send => sub {
+ my ($res_cv, $args) = @_;
+ $irc->send_chan(
+  $args->{channel}, 'NOTICE',
+  $args->{channel}, $args->{message},
+ );
+ $res_cv->result('sent'); # return to client                                                                                   
+});
+AnySan->run;
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <pre>
+# bot client
+use AnyEvent::MPRPC;
+
+my $channel = shift;
+my $message = shift;
+
+my $client = mprpc_client '127.0.0.1', '4423';
+my $d = $client->call(
+ send => {
+  channel => $channel,
+  message => $message,
+ }
+);
+say $d->recv;
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>AnyEventベースなんで<br />もうちょっと<br />特徴わかりやすい<br />デモ作った</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p><a href="https://twitter.com/dan_the_bot" target="_blank">@dan_the_bot</a></p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Dan The Bot 特徴</h2>
+  <ul>
+   <li>Twitterで「!dan」とポストした人にdankogaiの名言をリプライ</li>
+   <li>ircで誰かが「!dan」と発言したらdankogaiの名言を発言</li>
+   <li>それらの様子をリアルタイムでブラウザでストリーミングしてみれる</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>こーど見ながら動かしましょう</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>まとめ</h2>
+  <ul>
+   <li>IRC/TwitterなどのbotはAnySanを使って書くと楽</li>
+   <li>Twitter IRC Gatewayとかも楽に書ける</li>
+   <li><a href="http://github.com/yappo/p5-AnySan/">http://github.com/yappo/p5-AnySan/</a></li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>有り難うございました！</p>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'takahashi'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>
