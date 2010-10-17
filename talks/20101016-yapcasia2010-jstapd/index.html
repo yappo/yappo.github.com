@@ -1,0 +1,667 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>Ajax application testing</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>Ajax Application Testing</h1>
+
+ <address>Yappo: yappo あっと shibuya.pl<br /> Shibuya Perl Mongers</address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>自己紹介</h2>
+  <ul>
+   <li>大沢和宏</li>
+   <li>PAUSE: YAPPO</li>
+   <li>github: yappo</li>
+   <li>Farmer</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>今回のテーマ</h2>
+  <div>本日は、僕が会社で作ってるFiciaというAjaxなサービスで使っている、AjaxテストツールのJSTAPdについてお話します。</div>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li style="color:#f00;">what is JSTAPd</li>
+   <li>JSTAPd setup</li>
+   <li>using JSTAPd</li>
+   <li>inside JSTAPd</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>background</h2>
+  <ul>
+   <li>JSUnit</li>
+   <li>Selenium</li>
+   <li>QUnit</li>
+   <li>Test::QUnit</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Test::QUnit ?</h2>
+  <ul>
+   <li>昨日のLTで紹介されてた</li>
+   <li>Qunit 使ったテストをPerlの作法で行える</li>
+   <li>MozRepl 使ってるので、実行可能なブラウザが限定的</li>
+   <li>昨日知ったので良く知らない。。。</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>関係ないけど@t_wadaが<br />QUnit-TAPってのを作った</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>狙い</h2>
+  <ul>
+   <li>各種ブラウザのJavaScriptエンジンを使いたい</li>
+   <li>Ajaxのコードを簡単にテスト出来ること</li>
+   <li>CLIでテストしたい</li>
+   <li>Perlの人なのでPerlの作法でテストしたい</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>what is JSTAPd</h2>
+  <ul>
+   <li>Ajaxアプリに特化したテストツール</li>
+   <li>TAPに対応</li>
+   <li>jsDeferred-ishにテストが書ける</li>
+   <li>server sideのモックアップを *.t に書ける</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>さらなる特色</h2>
+  <ul>
+   <li>make test を実行するだけで、自動的にテストサーバが立ち上がり、ブラウザが立ちあがり、テスト実行、そしてブラウザ閉じる</li>
+   <li>ブラウザ閉じるのはFxでは出来ない</li>
+   <li>IEでも動くってサイキロンが言ってた</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ユーザが使う可能性の<br />あるブラウザで<br />自動テストする事が必須</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li>what is JSTAPd</li>
+   <li style="color:#f00;">JSTAPd setup</li>
+   <li>using JSTAPd</li>
+   <li>inside JSTAPd</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>how to install</h3>
+  <pre>
+$ curl -L http://cpanmin.us | perl - JSTAPd
+  </pre>
+  <h3>github</h3>
+  <pre>
+http://github.com/yappo/JSTAPd
+$ git clone http://github.com/yappo/JSTAPd.git
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li>what is JSTAPd</li>
+   <li>JSTAPd setup</li>
+   <li style="color:#f00;">using JSTAPd</li>
+   <li>inside JSTAPd</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>実際に動かしながら<br />紹介</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>テストプロジェクト作成</h3>
+  <pre>
+$ jstapd -n project_name
+  </pre>
+  <h3>テストサーバ起動</h3>
+  <pre>
+$ jstapd -d project_name
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ブラウザでアクセスして<br />「make test」ボタン<br />を押す</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>スケルトンで作った<br />ファイル説明</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>index</h2>
+  <ul>
+   <li>テストをブラウザで表示する為に必要なテンプレートファイル</li>
+   <li>普通は弄らない</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>conf.pl</h2>
+  <ul>
+   <li>テストの設定を行う</li>
+   <li>JSTAPdのAPI URLの変更</li>
+   <li>JSライブラリのディレクトリの設定</li>
+   <li>CLIの設定</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>01_base.t</h2>
+  <ul>
+   <li>テストケースの数</li>
+   <li>利用するJSライブラリの指定</li>
+   <li>Ajaxのサーバサイドの実装を書く場所</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>01_base.js</h2>
+  <ul>
+   <li>実際のテストコードをJavaScriptで書く</li>
+   <li>テストコードはTest::More-ishに書ける</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>01_base.html</h2>
+  <ul>
+   <li>テストで必要なDOM要素を書いて行く</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>肝心のCLIは？</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>conf.plに以下を追加</h3>
+  <pre>
+$config->{auto_open_command} =
+ 'open -g -a Safari %s';
+  </pre>
+  <h3>or 環境変数設定</h3>
+  <pre>
+$ export JSTAP_AUTO_OPEN_COMMAND=
+ 'open -g -a Safari %s'
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>コード書きながら以下を説明</h2>
+  <ul>
+   <li>ok(), is(), like(), ...</li>
+   <li>JSTAPd jQuery plugin</li>
+   <li>DOM処理</li>
+   <li>テストケース追加</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>JSDeferred-ish</h2>
+  <ul>
+   <li>cho45作のJSDeferredっぽい記述でテスト書ける</li>
+   <li>非同期アプリはcallbackが入れ子になってカオスコードになる</li>
+   <li>JSDeferredはスマートに書けるようになる</li>
+   <li>JSTAPdではjstapDeferredて名前</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>before</h3>
+  <pre>
+setTimeout(function(){
+ foo();
+ setTimeout(function(){
+  bar();
+  setTimeout(function(){
+   baz();
+  }, 100);
+ }, 100);
+}, 100);
+  </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>after</h3>
+  <pre>
+jstapDeferred.wait(100).next(function(val){
+  foo();
+ }).
+ wait(100).next(function(val){
+  bar();
+ }).
+ wait(100).next(function(val){
+  baz();
+ });
+ </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'pre': { lineHeight: 1 } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Ajax Testing</h2>
+  <ul>
+   <li>*.t ファイルにサーバサイドの実装を書く</li>
+   <li>*.js 側では普通にAjaxのコードを書く</li>
+   <li>ただし jstapDeferred を駆使する必要がある</li>
+   <li>非同期処理になるので jstapDeferred 使わないと、全処理完了前にテストが終わってしまう</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>実際にコード<br />書きながら説明</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>make test<br />をMakefile.PL<br />書きながらやってみる</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li>what is JSTAPd</li>
+   <li>JSTAPd setup</li>
+   <li>using JSTAPd</li>
+   <li style="color:#f00;">inside JSTAPd</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>inside JSTAPd</h2>
+  <ul>
+    <li>PSGI/Plack/Twiggy</li>
+    <li>最初はTwiggy使ってなくて、テスト完了したかどうかを10msecおきに聞いてた</li>
+    <li>Twiggy後はlong pollingでテスト完了を聞いてる</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>inside JSTAPd 以上</p>
+  <script type="text/javascript">
+    s6.page({
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>
+    JSTAPdの使い方入門記事を、今月後半に発売される Web+DB PRESS vol.59 にて書きました。
+    <img src="img/webdb.jpg" height="200" />
+  </p>
+  <script type="text/javascript">
+    s6.page({
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>まとめ</h2>
+  <ul>
+    <li>Perl MongerがAjaxテスト書くならJSTAPd</li>
+    <li>Ajaxのサーバ実装は他言語でも書けるように死体</li>
+    <li>開発者募集してます</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.3, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li>what is JSTAPd</li>
+   <li>JSTAPd setup</li>
+   <li>using JSTAPd</li>
+   <li>inside JSTAPd</li>
+   <li style="color:#f00;">おまけ(約30分)</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>おまけ</h2>
+  <div>せっかくPerlの祭典で空気読まずJavaScriptの話をしたので、ついでにフロントエンドの話でもしましょう。</div>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>(中略)</h2>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>まとめ</h2>
+  <ul>
+   <li>どんなサービスを提供するかのポリシーを定める</li>
+   <li>データが多くなりがちになるときは、必要なデータだけを処理するようにする</li>
+   <li>ユーザの操作の邪魔にならないように作る</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>有り難うございました！</p>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'takahashi'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>
