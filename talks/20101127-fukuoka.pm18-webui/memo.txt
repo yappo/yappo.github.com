@@ -1,0 +1,46 @@
+perlの章
+
+- ficia の構造
+-- server 構成
+-- 使ってるモジュール
+--- HTTP::Engine base WAF
+--- Data::Model
+---- Driver::Memcached (Data::MessagePack)
+--- Q4M
+--- Imager
+---- Imager::Filter::ExifOrientation
+--- Image::JpegCheck
+--- JSTAPd
+- proccess memory
+-- 一般的なストレージサービスの構成として
+client <--> app server <--> storage server
+--- app server が client と storage server の間でデータを中継する必要がある
+--- この中継しょりでメモリが太る可能性が出てくる
+-- 画像ファイルのデータをいっぺんにメモリに読み込むのはやっちゃだめ
+-- 普通やらないけども、うっかり次のような事をやると、メソッドを呼び出すたびにメモリ使用量が増えちゃう
+  open my $fh, '<', $filename;
+  my $data = do { local $/; <$fh> };
+  $foo->bar($data);
+  ...
+  package Foo;
+  sub bar {
+      my($self, $data) = @; # ここでメモリコピー
+      $self->baz($data);
+  }
+  sub baz {
+      my($self, $data) = @; # ここでメモリコピー
+  }
+--- client -> server  (HTTP::Engineのオプション)
+--- server -> storage server (HTTP::Request::StreamingUpload)
+--- storage server -> server 
+  my $ua = LWP::UserAgent->new;
+  $ua->get($url, ':content_file' => $save_filename);
+--- server -> client
+  open my $fh, '<', $save_filename;
+  $res->body( $fh );
+  return $res;
+-- レスポンスを早くかえす
+--- アップロードするたびに、サムネイル作成や動画変換おわるまでレスポンス返さないとつまるので
+ workerとかにqueueでしょりして、uploadできたかどうかのレスポンスだけ先に返して、処理結果は別に通知
+ facebook apiとか
+-- cache を使う
