@@ -1,0 +1,34 @@
+<!doctype html>
+<html data-useHistoryState-pathnamePrefix="/projects/jquery.mobile.useHistoryState/" data-useHistoryState-pageidPrefix="page-">
+  <head>
+    <meta charset="UTF-8" />
+    <title>jQuery Mobile using history state: Demo</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css"/>
+    <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js"></script>
+    <script src="https://github.com/yappo/yappo-jquery.mobile.useHistoryState/raw/master/jquery.mobile.useHistoryState.js"></script>
+  </head>
+  <body>
+
+    <div data-role="page" id="page-livedemo.html">
+      <div data-role="header">
+        <h1>LIVEDEMO PAGE</h1>
+      </div>
+      <div data-role="content">
+        <a href="#page-help.html">help</a>
+      </div>
+    </div>
+
+    <div data-role="page" id="page-help.html">
+      <div data-role="header" data-backbtn="true">
+        <h1>HELP PAGE</h1>
+      </div>
+      <div data-role="content">
+        <a href="javascript:history.back()">back</a><br /><br />
+        help here<br />
+        <a href="#page-livedemo.html">livedemo</a>
+      </div>
+    </div>
+
+  </body>
+</html>
