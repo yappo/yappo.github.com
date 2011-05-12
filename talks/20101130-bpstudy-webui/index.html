@@ -1,0 +1,842 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>モダン WebUI</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>この資料の主な部分の初出：技術評論社刊『WEB+DB PRESS Vol.56, 57, 58』（<a href="http://wdpress.gihyo.jp">http://wdpress.gihyo.jp</a>）</p>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>モダン WebUI の章</h1>
+
+ <address>Yappo: yappo あっと shibuya.pl<br /> Shibuya Perl Mongers</address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>自己紹介</h2>
+  <ul>
+   <li>大沢和宏</li>
+   <li>Perl Hacker</li>
+   <li>CPAN Author</li>
+   <li>Farmer</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>最近は</h2>
+  <ul>
+   <li>OSDC.tw 2010</li>
+   <li>Yokohama.PM #6</li>
+   <li>YAPC::Asia 2010</li>
+   <li>Fukuoka.PM</li>
+   <li>BPStudy #39で発表なう</li>
+   <li>Shibuya.PM #15で発表予定</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>現在Web+DB PRESSにて<br />WebUIの連載をやっています</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        separator: 'slide',
+        styleBase: 'custom',
+        backgroundImage: 'img/webdb.jpg'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>そのほか会社で<br />Ficiaというフォトストレージ<br />サービスをやっています</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        separator: 'slide',
+        styleBase: 'custom',
+        backgroundImage: 'img/ficia.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>今回のテーマ</h2>
+  <div>LDRやPhotoshop Express等のように、デスクトップアプリケーションをWeb上で提供するサービスが増えていますが、それらのアプリケーションはどう作ったら良いかという話をします。</div>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>今回のテーマ</h2>
+  <div>具体的にはFiciaをどんな感じで作っているのかと言うのを話します。</div>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.9em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li style="color:#f00;">目指す方向と問題点</li>
+   <li>データ量の増大にどう対応するか</li>
+   <li>どうするイベント通知</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目指す方向</h2>
+  <ul>
+   <li>全てのデータはWebへ</li>
+   <li>操作感はキビキビ早く</li>
+   <li>ユーザを待たせない</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>解決すべき問題を見つける</h2>
+  <ul>
+   <li>どのようなデータを取り扱うWebアプリを作るのか明確に</li>
+   <li>そのデータをWebにアップロードする方法は、何が一番楽かを考える</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <div>回線やサーバ処理速度につい<br />ては基本すぎなので触れない</div>
+   <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Ficiaでは...</h2>
+  <ul>
+   <li>撮影した写真を全部保存するストレージサービス</li>
+   <li>PCにデジカメのカードが繋がった時に、カードの中の写真を全部アップロード</li>
+   <li>一度あげたデータは二度とアップロードしない</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>専用クライアントを<br />PCにインストールして<br />意識せずデータを<br />Webにあげられる</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>Webサービスだからといって全部ブラウザの中だけで完結せずに、必要ならば専用クライアントを作るくらいの柔軟さも重要</p>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>これが達成できれば何でもいい</h2>
+  <ul>
+   <li>全てのデータはWebへ</li>
+   <li>操作感はキビキビ早く</li>
+   <li>ユーザを待たせない</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ここまでは、全てのデータを<br />Webに上げる良い方法の話</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ここからは、上がったデータ<br />をキビキビ見るという話</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>ふつうのWeb</h2>
+  <ul>
+   <li>MVCは全てserver side</li>
+   <li>画面遷移のたびにhtmlをサーバから取ってくる</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>はたして毎回HTMLを作って<br />送る必要があるのか？</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>例えば写真サイト</h2>
+  <ul>
+   <li>ユーザが見たいのは画像のみ</li>
+   <li>普通は次の写真をどんどん見たい</li>
+   <li>極端に言うと画像だけ変われば良い</li>
+   <li>次の写真を見る時にHTMLまで作るのは無駄</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.9em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>例えばこうする</h2>
+  <ul>
+   <li>次の写真を見るリンクを踏んだら、Ajax等を使って次の写真の画像URLだけを受け取る</li>
+   <li>画像URLを受け取ったら、その時見ていた写真のIMGタグのsrc要素を新しい画像URLに差し替える</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.9em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>サーバ側にModelとController<br />を置いて、ブラウザ側で<br />Viewを実装するイメージ</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi',  styles: { 'p': { lineHeight: 1.2, fontSize: "0.9em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>予め次の写真を先読みする<br />事で、さらに早く表示できる</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Pros :)</h2>
+  <ul>
+   <li>サーバ側でHTMLの動的生成をしないので負荷が減る</li>
+   <li>データ転送量も大幅に減る</li>
+   <li>ブラウザのレンダリング変更する場所も限定的</li>
+   <li>結果的に高速に次の写真が表示される</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Cons ;(</h2>
+  <ul>
+   <li>permalinkが無くなる(詳細は次ページ)</li>
+   <li>サーチエンジンなどのbotがリンク辿れなくなる</li>
+   <li>そもそもJavaScriptが動く環境じゃないと使えない</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>permalink問題は、googleなどが"#! が含まれる URL を hash を含まないものに読み替える仕組みを提唱している"(参考:<a href="http://d.hatena.ne.jp/kazuhooku/20101012/1286901973">kazuhoのメモ置き場</a>)</p>
+  <script type="text/javascript"> s6.page({}); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>が、しかしHTML5ならば<a href="http://bsdhouse.org/test/map.html?35.602545_139.692883" target="_blank">Session History</a>を使えば「location.hashいじるからbotが辿れるpermalinkが作れない」とか言えなくなる(参考:<a href="http://d.hatena.ne.jp/bsdhouse/20101014/1286991817">yamasaのネタ帳</a>)ようなので、今後検証したい</p>
+  <script type="text/javascript"> s6.page({}); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li>目指す方向と問題点</li>
+   <li style="color:#f00;">データ量の増大にどう対応するか</li>
+   <li>どうするイベント通知</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>サムネイル一覧</h2>
+  <div>一般的な写真サイトでは、上がっている写真を一覧で見る機能がついています。<br />Ficiaの物を見てみましょう。</div>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>画面遷移の無い一覧表示</h2>
+  <div>Ficiaでも、Ajaxを駆使して画面遷移無く写真の閲覧が出来るようになっていますが、1万件も写真があると普通に実装してしまうと困った事になる</div>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>ハマりどころ</h2>
+  <ul>
+   <li>1万件全部が増を表示したらブラウザ重い</li>
+   <li>1万件分のデータをAjaxで取ったら遅い</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>どうするべきか</h2>
+  <ul>
+   <li>必要な所だけ表示</li>
+   <li>必要な部分だけダウンロード</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>必要な所だけを表示すべき</h2>
+  <ul>
+   <li>多量に表示すべきデータがあっても、画面の大きさは有限</li>
+   <li>画面に見えない部分を一生懸命レンダリングしてもリソースの無駄</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/nagai.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Ficiaでは...</h2>
+  <ul>
+   <li>どのサムネイルが画面で表示されるかを常に計算して、表示される部分だけのDOMを作っている</li>
+   <li>スクロールした瞬間に不要なDOMを消している</li>
+   <li>とても縦長な空白のDOMを伸び縮みさせる事で違和感無くしている</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/hitsuyou-1.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/hitsuyou-2.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>もうひと工夫</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi',  styles: { 'p': { lineHeight: 1.2, fontSize: "0.9em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Ajaxリクエストにページングを</h2>
+  <ul>
+   <li>必要な所だけ描画しても、1万件分のJSONを一気にダウンロードしたら遅くなる</li>
+   <li>表示に必要な部分だけの小さなJSONをダウンロードさせるようにすると速い</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/sakiyomi.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>さらに。。。</h2>
+  <ul>
+   <li>サムネイルリストの場合だと、画面の真ん中に位置する部分から描画してあげたほうが体感速度が上がる</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/nakakara.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Pros :)</h2>
+  <ul>
+   <li>必要な部分のサムネイルだけダウンロードされるのでネットワークに優しい</li>
+   <li>描画するDOMの量が圧倒的に少ないのでクライアントにも優しい</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>Cons ;(</h2>
+  <ul>
+   <li>ページングしたJSONを読み込むタイミングで回線が遅くなったら、ちょっと詰まる</li>
+   <li>激しいスクロールをさせると描画が追いつかない事がある</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>キャッシュを忘れずに</h2>
+  <ul>
+   <li>JSONや画像データ等は、適切なキャッシュをかけないとスクロールされるたびにダウンロードする事になるので注意が必要</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>目次</h2>
+  <ul>
+   <li>目指す方向と問題点</li>
+   <li>データ量の増大にどう対応するか</li>
+   <li style="color:#f00;">どうするイベント通知</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>ここまでのまとめ</h2>
+  <div>ここまでの流れで基本的に画面遷移が発生しないようなアプリケーションの話ですね</div>
+  <script type="text/javascript">
+    s6.page({ styles: { 'div': { lineHeight: 1, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>画面遷移ないと</h2>
+  <ul>
+   <li>「あなたの写真にコメントされました」見たいなお知らせをmixiのお知らせみたく出せない</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/mixi.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>画面遷移ないと</h2>
+  <ul>
+   <li>「あなたの写真にコメントされました」見たいなお知らせをmixiのお知らせみたく出せない</li>
+   <li>なぜならHTMLをサーバからダウンロード出来るのが一回だけ</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>画面遷移ないと</h2>
+  <ul>
+   <li>「あなたの写真にコメントされました」見たいなお知らせをmixiのお知らせみたく出せない</li>
+   <li>なぜならHTMLをサーバからダウンロード出来るのが一回だけ</li>
+   <li>JavaScriptで動的に取ってくるしかない</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>なぜ通知するのか</h2>
+  <ul>
+   <li>自分の上げた写真にコメントが付くと嬉しい</li>
+   <li>ユーザが嬉しいと思う事は、サービサーとしても早く教えてあげたい</li>
+   <li>サービサーとしてはユーザに喜んで欲しいから通知する。それもいち早く</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>実現手段</h2>
+  <ul>
+   <li>定期的にserverを叩く</li>
+   <li>long pollする</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>定期的にserverを叩く</h2>
+  <ul>
+   <li>setTimeout等を使って定期的にイベントが読めるAPIを叩いて、新規イベントがあるか無いかをチェックする</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>定期的にserverを叩く Pros/Cons</h2>
+  <ul>
+   <li>良い所: 実装が簡単、proxyが間に挟まっていても普通は問題起きない</li>
+   <li>悪い所: apiへのアクセスが増える、イベントが発生してからユーザに通知するまでのタイムラグがある</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>long pollする</h2>
+  <ul>
+   <li>Ajaxリクエストを受け取ったら、サーバ側は新規イベントが発生するまで何も返さずに接続を繋げたままにして、新規イベントが発生したら即座に結果を返す</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>long pollする Pros/Cons</h2>
+  <ul>
+   <li>良い所: イベントが発生したと同時にユーザに通知できる</li>
+   <li>悪い所: 実装が複雑、途中にProxyが挟んでるとうまくいかない時がある</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>イベントが来たら</h2>
+  <ul>
+   <li>目立つ形でアピールする</li>
+   <li>keireki.jpだと右下がビガビガする</li>
+   <li>Ficiaだと右上がビガビガする</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>まとめ</h2>
+  <ul>
+   <li>どんなサービスを提供するかのポリシーを定める</li>
+   <li>データが多くなりがちになるときは、必要なデータだけを処理するようにする</li>
+   <li>ユーザの操作の邪魔にならないように作る</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>この章は、ここまで。つづく。</p>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'takahashi'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>
