@@ -1,0 +1,415 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>My Favorite Perl Modules</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>My Favorite Perl Modules</h1>
+
+ <address>Yappo: yappo あっと shibuya.pl<br /> Fukuoka Perl Mongers</address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>自己紹介</h2>
+  <ul>
+   <li>大沢和宏</li>
+   <li>PHP Programmer</li>
+   <li>not PEAR Author</li>
+   <li>冒険者</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>最近は</h2>
+  <ul>
+   <li>OSDC.tw 2010</li>
+   <li>Yokohama.PM #6</li>
+   <li>YAPC::Asia 2010</li>
+   <li>Fukuoka.PM</li>
+   <li>BPStudy #39</li>
+   <li>java-ja.js #2</li>
+   <li>Shibuya.PM #15で発表なう</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/mfpm.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ぼくが MFPM を<br />作った理由</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'custom',
+        backgroundImage: 'img/bokuhate.png'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>全世紀後半にPerl使うのめんどくさくってPHPがいいよと騙されて5年くらいPHPと同性生活してPHPに愛想就きて「なんかみやがわとかいうのとかいけべかずひろとかいうやつとかDanとかよくわからんひとがなんかやってる」と認識してたPerlやりたくなって、Perlのwebアプリの練習として作ったってのと</p>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>CPANソムリエが<br />欲しかったから</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>当時は cpan でググると</h2>
+  <ul>
+   <li>宇宙っぽい感じのPerl入門ページ</li>
+   <li>黄色い日本語訳のページ</li>
+   <li>とかとか</li>
+   <li>なんか古い感じで不安</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>CPANれーてぃんぐ？<br />えいごでわからなーい<br />日本語で情報集約したら<br />べんりくね？</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>こんな事できるサイトができた</h2>
+  <ul>
+   <li>moduleのタグ付け</li>
+   <li>おすすめポイントが集まる</li>
+   <li>php.net的なサンプルコードが集まる</li>
+   <li>Perlユーザの名刺的ページ</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>こんな事できるサイトができた</h2>
+  <ul>
+   <li>moduleのタグ付け</li>
+   <li>おすすめポイントが集まる</li>
+   <li>php.net的なサンプルコードが集まる</li>
+   <li>Perlユーザの名刺的ページ</li>
+   <li>watchしてるモジュールのバージョンが上がるとメールが来る！(かっきてき)</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>実際みてみましょう</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>作って速攻レンチくわえた<br />恐いおっさんが<br />(これは当時の印象であり<br />実際の印象には個人差があります)</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>「それはてブで(ry」</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>当時は、それも良かった気が<br />した、いまは<a href="http://b.hatena.ne.jp/entrylist?url=http://search.cpan.org/" target="_blank">このざま</a></p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>当時はみんな真面目に<br />search.cpan.org<br />をはてブしてた<br />今は少なく広告は<br />関係無い本田氏</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>今だったら Twitter ?<br /><a href="http://twib.jp/entrylist?url=search.cpan.org" target="_blank">Twib</a></p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>やっぱり専用サイト?</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>今のMFPMのコードは古すぎてメンテしたくないから、まっさらに作り直してperl-users.jpの上にMFPM置こうかなと思ってる。</p>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>冒頭でも事故紹介したように、僕いまPHPerなんでCPANとかのことまた勉強したいんですよ！(キグウ)なので、もいちど作るのありかなーと</p>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>MFPMの話おわり</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>もののついでに関連商材</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2><a target="_blank" href="http://wikihub.org/wiki/php-funcref-in-perl">php-funcref-in-perl</a></h2>
+  <ul>
+   <li>php.netのマニュアルに憧れたperl monger達による</li>
+   <li>phpのこの関数どうperlでかく?tips集</li>
+   <li>速攻で更新されなくなった</li>
+   <li>perl-usersのリポジトリに置くから皆やろう</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2><a target="_blank" href="http://perl-users.jp/">Perl-users.jp</a></h2>
+  <ul>
+   <li>日本の Perl ユーザのためのハブサイト</li>
+   <li>最近更新されないのはsvnで管理してるせいだという事で</li>
+   <li><a target="_blank" href="https://github.com/perl-users-jp/perl-users.jp-htdocs">GitHub</a>にリポジトリ移動</li>
+   <li>githubのweb上から更新出来るので気軽になった</li>
+   <li>希望すれば誰でもコンテンツ更新できます</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2><a target="_blank" href="http://perl-users.jp/articles/advent-calendar/2010/">JPerl Advent Calendar 2010</a></h2>
+  <ul>
+   <li>知らない人は隣に詳細聞いて下さい</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>我々もPerl社会の<br />環境整備を地道にやってるので<br />皆さんも一緒にやりませんか?</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'takahashi' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>まとめ</h2>
+  <ul>
+   <li>どんなサービスを提供するかのポリシーを定める</li>
+   <li>データが多くなりがちになるときは、必要なデータだけを処理するようにする</li>
+   <li>ユーザの操作の邪魔にならないように作る</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.5, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>この章は、ここまで。つづく。</p>
+  <script type="text/javascript">
+    s6.page({
+        styleBase: 'takahashi'
+    });
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>
