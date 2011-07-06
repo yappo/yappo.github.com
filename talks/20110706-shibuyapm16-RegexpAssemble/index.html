@@ -1,0 +1,502 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>Regexp::Assemble</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+<img src="http://a1.twimg.com/profile_images/1399837723/kaee.png" width="15%">
+<img src="http://a1.twimg.com/profile_images/1399837723/kaee.png" width="15%">
+<img src="http://a1.twimg.com/profile_images/1399837723/kaee.png" width="15%">
+<img src="http://a1.twimg.com/profile_images/1399837723/kaee.png" width="15%">
+<img src="http://a1.twimg.com/profile_images/1399837723/kaee.png" width="15%">
+<img src="http://a1.twimg.com/profile_images/1399837723/kaee.png" width="15%">
+<img src="http://a1.twimg.com/profile_images/1399837723/kaee.png" width="15%">
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>Regexp::Assemble とかその辺の話</h1>
+
+ <address>Yappo: yappo あっと shibuya.pl<br />ニート</address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>自己紹介</h2>
+  <ul>
+   <li>大沢和宏</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>最近は</h2>
+  <p>出勤しないで箱根行ったり海行ったりする生活をしてます。</p>
+  <p>あと、Shibuya.PM #15の懇談会で次のWeb+DB PRESSのPerl連載を誰に書いてもらおうか決めるだけの簡単なお仕事してます。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>今日は</h2>
+  <p>否定表現夏祭りだそうで、総長から Regexp::Assemble の話をしろと言われたので、正規表現を駆使して住所抽出した時の思い出話をします。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h2>前回までのあらすじ</h2>
+  <p>Google Maps APIが流行り始めて来て位置情報期に突入したYappoがGeography::AddressExtract::Japan (以下G::AE::J) を作ったので、その苦労話を位置情報業界の人をDISりつつShibuya.PM#7とYAPC::Asia 2007でプレゼンした。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1, fontSize: "0.75em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>作ったモジュールを使って、ニュースサイトの記事から位置情報を抜き出してGoogle Mapsに貼付けるデモとか披露したのも懐かしい。</p>
+  <p><a href="http://shibuya.pl/planetmaps/" target="_blank">http://shibuya.pl/planetmaps/</a></p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>G::AE::J は正規表現を多用しています。 (右のタブとか見る)</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>現存する正確な住所を抽出する目的で、郵便局で公開している郵便番号と住所が纏まったCSVファイルを元にして正規表現を作っています。</p>
+  <p><a href="http://www.post.japanpost.jp/zipcode/download.html" target="_blank">here</a></p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>膨大な住所情報を、一つの巨大な正規表現にするのに手作業でやってられない。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>こんなの使えない</h3>
+   <pre>(福島県|福岡県|福井県|山梨県|山口県|...)</pre>
+   <h3>こうあるべき</h3>
+   <pre>((?:(?:福[島岡井])|(?:山[梨口])|...)県)</pre>
+   <p>都道府県だと意味ないけど、通常の住所データは膨大なので圧縮したい。</p>
+   <p>速度は?さっきDanさんが最適化するって言ってたので実際に計測しましょう。 -&gt; bench_regexp_or.pl</p>
+   <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.7em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>速度は?</h3>
+   <p>さっきDanさんが最適化するって言ってたので実際に計測しましょう。 -&gt; bench_regexp_or.pl</p>
+   <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.7em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>その望みを叶える方法として、たまたま <span style="color: red;">本邦初公開！電話番号の正規表現 - にぽたん研究所</span> っていうブログを見て Regexp::Assemble を知ったのでした。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>で、8回くらい前のShibuya.PMでドヤ顔で発表してたらLTだと言うのにdanさんが「<span style="color: red;">それRegexp::Trieのが速いよ</span>」と質問してくれました。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ここまであらすじ</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>今回の裏テーマ</h3>
+  <p>第一回チキチキ Dan the Regexp Modules ソムリエ大会！</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>Dan the Regexp Modules</h3>
+  <ul>
+   <li>Regexp::Optimizer</li>
+   <li>Regexp::Trie</li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>Regexp::Optimizer</h3>
+  <img src="img/regexp-optimizer-error.png">
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>Regexp::Trie</h3>
+  <p><span style="color: red;">404 Blog Not Found:TRIE-Optimized Regexp</span> というブログの中では、<span style="color: red;">Regexp::OptimizerやRegexp::Assembleのようなモジュールもある。ただこれらはTrie以外のOptimizeもしてしまうので、ちょっと重たい</span>らしい。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.1, fontSize: "0.75em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p><span style="color: red;">鵜呑みにするな計測しろ</span>。という事でRegexp::Assembleとの比較。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.0, fontSize: "1em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>正規表現生成速度比較</h3>
+   <pre>$ bench_regexp_create.pl
+           Rate Assemble     Trie
+Assemble 41.7/s       --     -75%
+Trie      167/s     300%       --
+</pre>
+  <p>4倍くらい速い</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>生成した正規表現での速度比較</h3>
+   <pre>$ bench_regexp_search.pl # 実際動かす</pre>
+   <p>あんまり変わらない。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>だがあえて弾言しよう</h3>
+   <p>僕は Regexp::Assemble をおススメすると。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>広務が言ってた</h3>
+  <ul>
+   <li>意味のあるテストが多いモジュールを使うべし</li>
+   <li>最近メンテされてない物は選ぶな</li>
+   <li><img src="img/ro.png"></li>
+   <li><img src="img/rt.png"></li>
+   <li><img src="img/ra.png"></li>
+  </ul>
+  <script type="text/javascript">
+    s6.page({ styles: { 'ul/li': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>俺も二年前からテストカバレッジ100%期だったわーやべーやべー</p>
+  <img src="img/testcover.png" width="100%">
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.0, fontSize: "0.7em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>Regexp::Assemble の使い方</h3>
+  <p>さっきDanpoさんからご紹介をうけましたが、多分 R::A マイスターのニポサンタンが後で発表すると思うので自重します。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ここから本編ですが、皆さんは往々にして特定の文書群に対して特定のキーワード群があったら特定のマークアップを施すという業務を行う事があると思います。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>そう、今からターミナルでお見せする html_keyword_ra.pl のようなスクリプトです。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>数千個のキーワード群程度だったら、そこそこの速度で動くでしょう。しかし数万、数十万のキーワードになったらどうしますか?</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <table>
+     <tr>
+       <td><img src="img/gunyaraway.jpg" /></td><td>それ Groonga で解決できるよ</td>
+     </tr>
+   </table>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>そうです、Groongaがあるのです。 html_keyword_groonga.pl のようにすれば Regexp::Assemble で作った物と同じ動きになります。Patricia Tree使って辞書に登録されてるキーワードかを見てるだけなので比較的速いのです。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>本当に速いのかよ？って突っ込みがでますよね。実際に正規表現での処理とGroongaでの処理の比較を見てみましょう。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <pre>
+     $ bench_regexp_groonga.pl 10
+     $ bench_regexp_groonga.pl 100
+     $ bench_regexp_groonga.pl 1000
+     $ bench_regexp_groonga.pl 5000
+   </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <p>キーワードの数が増えると正規表現の方が速度が顕著に下がりますが、Goorngaの方は比較的安定してるのが解ると思います。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <p>正規表現は万能です。しかし万能ナイフでワインを開けるよりもソムリエナイフでワインを開けたほうがモテます(実話)。TPOに見合った道具をチョイスしてみんなでモテましょう。<br />モテたいってZyngaのエンジニアも言ってた。</p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <p>ご清聴有り難うございました。<br />
+     以上 Perl5 Groonga Project の宣伝でした。<br />
+     <a href="https://github.com/yappo/p5-Groonga" target="_blank">https://github.com/yappo/p5-Groonga</a>
+   </p>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>
