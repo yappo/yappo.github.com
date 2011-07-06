@@ -227,7 +227,6 @@ setInterval(function() {
    <h3>こうあるべき</h3>
    <pre>((?:(?:福[島岡井])|(?:山[梨口])|...)県)</pre>
    <p>都道府県だと意味ないけど、通常の住所データは膨大なので圧縮したい。</p>
-   <p>速度は?さっきDanさんが最適化するって言ってたので実際に計測しましょう。 -&gt; bench_regexp_or.pl</p>
    <script type="text/javascript">
     s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.7em" } } })
   </script>
@@ -237,7 +236,7 @@ setInterval(function() {
 
  <div>
    <h3>速度は?</h3>
-   <p>さっきDanさんが最適化するって言ってたので実際に計測しましょう。 -&gt; bench_regexp_or.pl</p>
+   <p>さっきDanさんが最適化するって言ってたので実際に計測しましょう。 -&gt; <a target="_blank" href="bench_regexp_or.pl">bench_regexp_or.pl</a></p>
    <script type="text/javascript">
     s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.7em" } } })
   </script>
@@ -326,7 +325,7 @@ setInterval(function() {
 
  <div>
    <h3>正規表現生成速度比較</h3>
-   <pre>$ bench_regexp_create.pl
+   <pre>$ <a target="_blank" href="bench_regexp_create.pl">bench_regexp_create.pl</a>
            Rate Assemble     Trie
 Assemble 41.7/s       --     -75%
 Trie      167/s     300%       --
@@ -341,7 +340,7 @@ Trie      167/s     300%       --
 
  <div>
    <h3>生成した正規表現での速度比較</h3>
-   <pre>$ bench_regexp_search.pl # 実際動かす</pre>
+   <pre>$ <a target="_blank" href="bench_regexp_search.pl">bench_regexp_search.pl</a> # 実際動かす</pre>
    <p>あんまり変わらない。</p>
   <script type="text/javascript">
     s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
@@ -406,7 +405,7 @@ Trie      167/s     300%       --
  <!-- ===================================================== -->
 
  <div>
-  <p>そう、今からターミナルでお見せする html_keyword_ra.pl のようなスクリプトです。</p>
+  <p>そう、今からターミナルでお見せする <a target="_blank" href="html_keyword_ra.pl">html_keyword_ra.pl</a> のようなスクリプトです。</p>
   <script type="text/javascript">
     s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
   </script>
@@ -437,7 +436,7 @@ Trie      167/s     300%       --
  <!-- ===================================================== -->
 
  <div>
-  <p>そうです、Groongaがあるのです。 html_keyword_groonga.pl のようにすれば Regexp::Assemble で作った物と同じ動きになります。Patricia Tree使って辞書に登録されてるキーワードかを見てるだけなので比較的速いのです。</p>
+  <p>そうです、Groongaがあるのです。 <a target="_blank" href="html_keyword_groonga.pl">html_keyword_groonga.pl</a> のようにすれば Regexp::Assemble で作った物と同じ動きになります。Patricia Tree使って辞書に登録されてるキーワードかを見てるだけなので比較的速いのです。</p>
   <script type="text/javascript">
     s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
   </script>
@@ -455,11 +454,45 @@ Trie      167/s     300%       --
  <!-- ===================================================== -->
 
  <div>
+   <p><a target="_blank" href="bench_regexp_groonga.pl">bench_regexp_groonga.pl</a> 1/2</p>
    <pre>
-     $ bench_regexp_groonga.pl 10
-     $ bench_regexp_groonga.pl 100
-     $ bench_regexp_groonga.pl 1000
-     $ bench_regexp_groonga.pl 5000
+$ bench_regexp_groonga.pl 10
+                   Rate          Groonga Regexp::Assemble
+Groonga          4717/s               --             -52%
+Regexp::Assemble 9901/s             110%               --
+$ bench_regexp_groonga.pl 100
+                   Rate          Groonga Regexp::Assemble
+Groonga          4630/s               --             -50%
+Regexp::Assemble 9346/s             102%               --
+   </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <p><a target="_blank" href="bench_regexp_groonga.pl">bench_regexp_groonga.pl</a> 1/2</p>
+   <pre>
+$ bench_regexp_groonga.pl 1000
+                   Rate Regexp::Assemble          Groonga
+Regexp::Assemble 4184/s               --              -7%
+Groonga          4505/s               8%               --
+$ bench_regexp_groonga.pl 5000
+                   Rate Regexp::Assemble          Groonga
+Regexp::Assemble 1558/s               --             -64%
+Groonga          4274/s             174%               --
+   </pre>
+  <script type="text/javascript">
+    s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
+  </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <pre>
    </pre>
   <script type="text/javascript">
     s6.page({ styles: { 'p': { lineHeight: 1.2, fontSize: "0.8em" } } })
