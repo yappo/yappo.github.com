@@ -1,0 +1,555 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>folkatdevs</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>folkatdevs</h1>
+
+ <address>Yappo: yappo あっと shibuya.pl<br /> Hikarie Perl Mongers</address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>、ライブドアではエンジニア採用してます！！１</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>昨日までのあらすじ</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ikachanを紹介しました。お陰ではてなでも導入してくれるそうです。でも今日は IRC は主題ではありません。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>社内向けプレゼンでやろうと思ってたネタですが、もったいないのでOpen&Shareしに来ました。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>僕(や、他の人)が入社して2ヶ月くらいで調えた開発環境諸々についてアウトプットします</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>死霊をまとめてたら40min用のトークになりそうでしたが、気にせずLTします。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>〜入社当日〜</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>まずは可能な限りありったけのircチャンネルに入った</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>どういう感じなのかを掴むのはもちろんだけど、全体を俯瞰しておく事で「ちょっとツール書いたら」便利になるのになー的なネタを拾ってきやすくなる</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>入社1-2週間目</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>社内 gyazo サーバはすでにあったけど、専用クライアントないので mac 版だけ作って配布</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>折角あっても、エンジニア以外が簡単に使えるようになってないので意味ない</p>
+  <p>僕が作ったら、他の神先輩が win 版を配布してくれた</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>社内 nopaste にコマンド一発で送信出来る gisty の nopasete 版コマンド作った</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>Webブラウザ立ち上げてformにsubmitするの面倒</p>
+  <p>X code 入れてない not エンジニアが簡単に使えるように ruby で作っておいた</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>こういう便利ツールは、普及して common インフラでないと意味が無い</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>その他、 JPA 会長に既存の社内ツールのまとめ wiki 作ってもらった</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>新入社員で情弱なので、とてもたすかった</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ikachan</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>自分のプロジェクトでは、 deploy 通知から一部バッチ処理の終了通知まで対応するようになって、 irc 見るだけでプロジェクトの状況が把握出来るようになってきた</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>他プロジェクトでも nagios 監視の通知系が irc に出てくるようになってきた</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ikachan 入れ多目的は、既存 bot の置き換えだけをもくてきとしてなく、各種状態通知を irc に流しておく事で、プロジェクトの状態をメンバー全員に通知、しかもツールに組み込む事で手間なく通知して、社内の情報共有密度を多くするのが目的なので、ちょっとした事でも気楽にながせるようにはしたい</p>
+  <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'p': { fontSize: "0.7em" } } }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>流量多過ぎてうざくなってから絞ったりして考えればいいし</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>〜ささいなツール〜</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>twitter の url を irc に張ったら tweet 内容を irc に書き込む bot</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>url をわざわざクリックするとかあほらしいので、自分が関連するプロジェクトのチャンネルに放流</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>一日1000url張られるとして、1clickに1秒かかるとして、社員が1000人いたら、クリックするコストが一日あたり、1_000_000秒=100万秒=11.5日分の時間が無駄になる。これが時給750円の高校生バイト換算にすると、一日あたり208_333円のバイト代のコストがかかり、一ヶ月あたり約625万円のコストで、年間7604万円もtwitterのurlクリックに会社が金を払う事になってしまう。一般的な社会人の時給が750円とかは無いので、年間億単位のお金をかけてtwitterのurlをクリックする作業に支払う事になる。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'p': { fontSize: "0.5em" } } }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>ちょっとツールを書くだけでこれだけのコストダウンを実現出来てすごいですよね。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>〜ステージングサーバの環境〜</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>本題ですが、次に説明する事を順番に徐々に行ってきました</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>grader tools</h3>
+   <ul>
+     <li>grader-create branch, grader-remove branch</li>
+     <li>コマンド一発で、ミドルウェアの設定と必要なサーバプロセスの立ち上げ/削除が行える</li>
+     <li>ブランチ毎のステージング環境の管理が簡素化</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.8em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>create/remove したときは ikachan に飛ばしてる</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>staging status server</h3>
+   <ul>
+     <li>ステージングサーバの各種詳細状態をブラウザで見れるように</li>
+     <li>現在動いてるplack list、ブランチリスト</li>
+     <li>crontab でステータスを取って、静的ファイル配信</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.8em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>sql schema pages</h3>
+   <ul>
+     <li>crontab で定期的に、 SHOW CREATE TABLE して、スキーマをブラウザで見れるようにする</li>
+     <li>table 毎に md5 して、更新の合ったテーブルの検出をしやすくする</li>
+     <li>最初はおもに、誰かがテーブル追加した時に参考するだけのページでした</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.8em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>非エンジニア向け改修</h3>
+   <ul>
+     <li>ブラウザでステージングサーバのファイルを git pull して svc -t するページ</li>
+     <li>ブラウザで grader-create してくれるページ</li>
+     <li>デザイン変更等は、エンジニアが関わらない事もあるので、非エンジニあに優しくしておく</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.8em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>create/remove したときは ikachan に飛ばすように grader script が作られてるので、エンジニアも常に把握していられるし、わざわざ作業報告する必要がなくて面倒さが無い</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>〜ローカル開発環境〜</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>local 2 staging</h3>
+   <ul>
+     <li>local環境の ip address を定期的に status server に報告する</li>
+     <li>誰がどの ip address になるか解ってるので、トラブルになった時にすぐ助けられる</li>
+     <li>一括で開発用ファームウェアをアップグレードするときにも使える</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.8em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>diag.pl</h3>
+   <ul>
+     <li>開発用のイメージは、エンジニア意外も作業するので、 git やらサーバ落ちてるトラブルがたまにある</li>
+     <li>診断ツールを入れてある</li>
+     <li>コマンドを叩くと、プロセス一覧、git cloneしたディレクトリの状態等々をまとめたリポートファイルを作成</li>
+     <li>作ったファイルは、最初に出た nopaste script でアップロードして、 url を ikachan に</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.6em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>create_table.pl</h3>
+   <ul>
+     <li>vmの開発環境とステージングの schema が一致しなくなる時がある</li>
+     <li>status サーバを見れば最新の定義がわかるので、それをダウンロードして反映</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.8em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>staging create/update/remove</h3>
+   <ul>
+     <li>vmのシェル環境から staging create とやると status サーバの API を叩いて、ステージング環境を作る</li>
+     <li>非エンジニア向けの機能を使ってエンジニアに優しい環境をつくる</li>
+     <li>わざわざ ssh する必要がなくなるので便利</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.7em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>tests</h3>
+   <ul>
+     <li>prove plugin 書いて、 make test する時 prove 叩いたとき、最初だけテストDB作る</li>
+     <li>ci tools, ukigumo</li>
+     <li>割愛</li>
+   </ul>
+   <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'ul/li': { fontSize: "0.8em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>今までの流れからみて解る通り、小さいツールをいっぱい作って組み合わせて便利にしてる。 UNIX 思想的</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>最初から大きい事をやろうとすると、本当に作るのが大変。特に新人とかは成果を小出しに解りやすくしないと誰も評価出来ない。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>小さい便利な物を、多く作って行くと、そのうち少し大きな要件を既存のツールを組み合わせて作れるようになる、いつの間にか、組み合わせの組み合わせでとても大きなエコシステムが作れる。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>大元が小さいので、開発コストも低く方向性が間違っていたらすぐに取り消せる、実際に自分も途中まで作って没にしてるツールがいくつかある。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>〜まとめ〜</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>小さな面倒だと思った事は、すぐに小さいツールで自動化するととても良いし小さい積み重ねで良い感じに効率よくなる。ネトゲのステータスとにたもん。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>というか面倒くさがりやこそがプログラマ、怠惰こそが perl の美学ですよね。ということで perl にこじつけた感じで終わります。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>以上です。何か質問がございましたら、社内IRCもしくは後夜祭などでお願いします。あ、あと</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>あと、ライブドアではエンジニア採用してます！！１</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>

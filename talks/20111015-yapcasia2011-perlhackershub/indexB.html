@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css; charset=utf-8" />
+<meta http-equiv="Content-Script-Type" content="text/javascript; charset=utf-8" />
+<meta name="generator" content="emacs" />
+<meta name="version" content="0.1" />
+<meta name="author" content="Yappo" />
+<title>Perl Hackers Hub の舞台裏 typeB</title>
+<script type="text/javascript" src="./s6.js"></script>
+<script type="text/javascript">
+// <![CDATA[
+
+var bodyStyle = {
+    width: '100%',
+    height: '100%',
+    padding: '0',
+    margin: '0',
+    overflow: 'hidden',
+    backgroundColor: 'gray'
+};
+
+s6.css('html', bodyStyle);
+s6.css('body', bodyStyle);
+
+var pr;
+s6.attach(s6, 'ready', function ready() {
+    var html = document.documentElement;
+    var height = html.offsetHeight;
+    var width = html.offsetWidth;
+    var top = 0;
+    var left = 0;
+
+    if (height / width < 0.75) {
+        var originalWidth = width;
+        width = height / 0.75;
+        left = (originalWidth - width) / 2 + 'px';
+    }
+    else {
+        var originalHeight = height;
+        height = width * 0.75;
+        top = (originalHeight - height) / 2 + 'px';
+    }
+
+    var result;
+    if (result = document.cookie.match(/page=(\d+)/)) {
+        var startIndex = +result[1];
+    }
+
+    pr = new s6.Presentation({ element: document.body, width: width, height: height, startIndex: startIndex });
+    pr.style.left = left;
+    pr.style.top = top;
+    pr.start();
+
+    var indexNoOutline = false;
+
+    pr.funcPages.index.attachPage('click', function(i, element, wrapper) {
+        indexNoOutline = true;
+        setTimeout(function() {
+            indexNoOutline =false
+        }, 1000);
+        wrapper.style.background = '';
+        pr.go(i);
+    });
+
+    pr.funcPages.index.attachPage('mouseover', function(i, element, wrapper) {
+        if (indexNoOutline) return;
+        wrapper.className += ' selected';
+    });
+    
+    pr.funcPages.index.attachPage('mouseout', function(i, element, wrapper) {
+        wrapper.className = 'wrapper';
+    });
+
+    try {
+        var isIframe = !(window.parent == window);
+    } catch(e) {
+        isIframe = true;
+    }
+
+    s6.attach(document,   'keypress Right', 'step', 0, pr);
+    s6.attach(document,   'keypress Left',  'prev', 0, pr);
+    s6.attach(document,   'keypress Up',    function() { pr.go('index') });
+    s6.attach(document,   'keypress Down',  'back', 0, pr);
+
+    s6.attach(document,   'keypress l', 'step', 0, pr);
+    s6.attach(document,   'keypress h',  'prev', 0, pr);
+    s6.attach(document,   'keypress k',    function() { pr.go('index') });
+    s6.attach(document,   'keypress j',  'back', 0, pr);
+
+});
+
+// Test
+var timer = 0;
+setInterval(function() {
+    document.cookie = 'page=' + pr.index;
+    document.title = timer++;
+}, 1000);
+// ]]>
+</script>
+
+</head>
+<body>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <h3>操作方法</h3>
+  <ul>
+   <li>l キー: 次のページへ</li>
+   <li>h キー: 前のページへ</li>
+
+   <li>j キー: 目次ページへ</li>
+   <li>k キー: 目次ページから戻る</li>
+   <li>目次ページでは j k キーで一覧を移動し、クリックで選択します</li>
+  </ul>
+  <script type="text/javascript"> s6.page({ styles: { ul: { fontSize: '0.75em', marginTop: '2%' } } }) </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <h1>Perl Hackers Hub の舞台裏 typeB</h1>
+
+ <address>Yappo: yappo あっと shibuya.pl<br />Web+DB PRES をゆるく語る会</address>
+
+ <script type="text/javascript">
+    s6.page({
+        wrap: 2,
+        styles: { 'h1/span': { fontWeight: 'bold' } }
+    })
+ </script>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>明らかにこの連載は僕の成果ではありません。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>僕が枠を貰ってるセッションなのですが、折角なので</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>lestrrat, yusukebe, typester, サーセン, kazuho, acotie, daichi hiroki, xaicron, nekokak, kazeburo, inao の方々のうちいらっしゃる方、前に集合してください。
+</p>
+  <p>この会場内に lestrrat さんと inao さんが居ない場合は呼び出しましょう。</p>
+  <script type="text/javascript"> s6.page({ styleBase: '', styles: { 'p': { fontSize: "0.7em" } } }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>何で僕が指名したのかという話と共に、紙面では乗せきれなかった記事の意図などをお話いただきましょう</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>タイムキーパーの方にお願いです。1分前になったらまとめに移るので教えて下さい</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+   <h3>ねたちょう</h3>
+  <p>markdown2inao.pl, 1st-1(lestrrat,yusukebe,typester), 1st-2(gfx, kazuho, acotie), 2nd(hiroki, xaicron, nekokak, kazeburo), 次の人選会議、irc、xaicron zigorou消去事件、執筆初心者にも充実のサポート、会長フリーザ</p>
+  <script type="text/javascript"> s6.page({ styleBase: 'p: 1em' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+ <div>
+  <p>大元の index.html に戻る</p>
+  <script type="text/javascript"> s6.page({ styleBase: '' }); </script>
+ </div>
+
+ <!-- ===================================================== -->
+
+</body>
+</html>
