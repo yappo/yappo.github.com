@@ -1,0 +1,480 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div id="title" class="step" data-y="0" data-x="0">
+<h1>JPA 派遣枠 LT 大会 @ Kyoto.pm Tech Talks #01</h1>
+
+<p><address>Yappo: yappo あっと shibuya.pl<br /> hikarie Perl Mongers</address></p>
+
+</div>
+<div class="step" data-y="0" data-x="1200">
+<h2>申し訳ございません</h2>
+
+<p>折角京都にきたので昼飯に懐石料理食べに行ったら思ってた時間の倍かかって遅刻しました。誠に申し訳ありません。</p>
+
+<p><img src="img/kaiseki.png" height="50%" align="center" /></p>
+
+<p>近又さんは完全予約制なのにアポ無しで入れてくれて、とても美味しかったです。すいません。。</p>
+
+</div>
+<div class="step" data-y="0" data-x="2400">
+<h2>はじめに</h2>
+
+<p>Kyoto.PM 設立おめでとうございます！</p>
+
+<p>そして、JPA 派遣制度でのご指名有り難うございます！</p>
+
+</div>
+<div class="step" data-y="0" data-x="3600">
+<h2>この発表タイトル？</h2>
+
+<p>最初は捗るシリーズの続編にしようと思ってたんですが、よくよく Atnd を見てみたら Perl 初心者の方や学生の方がちらほら居たので、さっき思い立って複数のテーマをやる事にしました。</p>
+
+</div>
+<div class="step" data-y="0" data-x="4800">
+<h2>なんか</h2>
+
+<p>折角スポンサードして頂いて光栄すぎるのですが、今回東京から自腹で来た登壇者の方が居ててなんかほんとうすいませんすいません。</p>
+
+</div>
+<div class="step" data-y="800" data-x="0">
+<h2>timetable</h2>
+
+<ul>
+<li>14:41 My Initial A Modules</li>
+<li>14:46 Metrics with Twitter</li>
+<li>14:51 Big Regexp</li>
+<li>14:56 MySQL UDF</li>
+<li>14:59 超LT </li>
+</ul>
+
+</div>
+<div class="step" data-y="800" data-x="1200">
+<h1>My Initial A Modules</h1>
+
+</div>
+<div class="step" data-y="800" data-x="2400">
+<h2>はじめに</h2>
+
+<p>Perl とはユーモア溢れるコミュニティで、 CPAN というライブラリ共有サイトにはジョークに溢れるモジュールがいくつか点在していて、その多くが Acme という名前空間で登録されています。</p>
+
+</div>
+<div class="step" data-y="800" data-x="3600">
+<h2>Acme</h2>
+
+<p>このセッションでは、世界的にも数多くの Acme モジュールを生み出している私が、それぞれのモジュールの技術的な特徴を解説します。</p>
+
+</div>
+<div class="step" data-y="800" data-x="4800">
+<h2>Acme::Acotie</h2>
+
+<p>Class::Inspector という、特定のパッケージに含まれている関数を操作出来るモジュールを使って、 use した側のコードをランダムに入れ替えるサークルクラッシャー的モジュール。</p>
+
+<pre><code>sub yappo {'yappo'}
+sub nekokak {'nekokak'}
+sub nagayama { 'nagayama' }
+use Acme::Acotie;
+say yappo(); # ランダムに出力
+</code></pre>
+
+<p>[実際のコードを見たり動かす]</p>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2>Acme::Acotie 解説</h2>
+
+<ul>
+<li>Perl の関数は、コードリファレンスという C で言う所の関数ポインタで管理している</li>
+<li>すでに存在する関数にも上書き可能なので、シャッフルが可能となる</li>
+</ul>
+
+</div>
+<div class="step" data-y="1600" data-x="1200">
+<h2>Acme::FizzBuzz</h2>
+
+<p>FizzBuzz 問題を解決するためのコード量を 0 bit で解決する事が可能な夢のようなモジュール。</p>
+
+<pre><code>perl -MAcme::FizzBuzz -e ''
+</code></pre>
+
+<p>[実際のコードを見たり動かす]</p>
+
+</div>
+<div class="step" data-y="1600" data-x="2400">
+<h2>Acme::FizzBuzz 解説</h2>
+
+<ul>
+<li>FizzBuzz 問題を零バイトで書けるという機能と裏腹に、実際のコードが冗長なのはスルーしましょう</li>
+<li>実際の Fizz Buzz 数字は overload という C++ で言う所の operator overload 的な物を使って、オブジェクトから文字列を作ってる</li>
+<li>改行は C++ と同じような DESTORY を使って、どこでループを抜けても改行を出力出来るようにしてる</li>
+<li>DESTORY は Perl で RAII した Guard 系モジュールを作る時に必須</li>
+</ul>
+
+</div>
+<div class="step" data-y="1600" data-x="3600">
+<h2>Acme::FizzBuzz 真の解説</h2>
+
+<p>というか、解説かこうと思って久しぶりにコード読んだらどうやって動いてるのか本気で理解出来なくて死んだw</p>
+
+<p>過去の自分の書いたコードは他人のコード。という格言が有る通り、遊びのコードでも奇抜な実装をすると後で困るので可読性高くしましょう！というお手本になるモジュールでしたね。</p>
+
+</div>
+<div class="step" data-y="1600" data-x="4800">
+<h2>Acme::Monta</h2>
+
+<p>Perl 初心者の時に作ったから特記事項無し。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="0">
+<h2>Acme::NabeAtzz</h2>
+
+<p>Perl のオペコードの数字が3の倍数の時だけ、アホになってオペコードの数字を出力するモジュール。</p>
+
+<pre><code>use 5.015;
+use Acme::NabeAtzz;
+my $i = 0;
+do {
+    print $i++;
+    print "\n";
+};
+</code></pre>
+
+<p>[実際のコードを見たり動かす]</p>
+
+</div>
+<div class="step" data-y="2400" data-x="1200">
+<h2>Acme::NabeAtzz 解説</h2>
+
+<ul>
+<li>XS モジュールです</li>
+<li>VM レベルのオペコードに対応する関数ポインタのマップを全て差し替える事で VM レベルでの命令を差し替える事が出来ました</li>
+<li>5.8 用に作ったのに 5.15 でも動いてるのは、基本的に変わらない根本的な部分をハックした成果です</li>
+<li>他にも PL_check hack と言う物や PL_runloop hack という Perl core に関わるハックもあり、これらの Hack をして autobox 等の、普通じゃ使えない文法を可能にするモジュールとかが作られています</li>
+</ul>
+
+</div>
+<div class="step" data-y="2400" data-x="2400">
+<h2>Acme::NabeAtzz 解説おまけ</h2>
+
+<ul>
+<li>ope code 単位のパフォーマンスを計るために <a href="https://github.com/yappo/p5-devel-runopsanalyze/">https://github.com/yappo/p5-devel-runopsanalyze/</a> を作った事もある</li>
+</ul>
+
+</div>
+<div class="step" data-y="2400" data-x="3600">
+<h2>dan</h2>
+
+<p>文字リテラルを読まなくするプラグマ。レキシカルプラグマとして使える。</p>
+
+<pre><code>use 5.015;
+print "Dan The ";
+do {
+    use dan;
+    print "Read "; # ここ空文字を出力
+};
+print "Man\n";
+</code></pre>
+
+<p>[実際のコードを見たり動かす]</p>
+
+</div>
+<div class="step" data-y="2400" data-x="4800">
+<h2>dan 解説</h2>
+
+<ul>
+<li>5.10 から %^H というヒントハッシュを活用する事で、ユーザサイドでプラグマが作れます</li>
+<li>${^ENCODING} を使う事で Perl のパース処理に hook をして文字リテラルの解釈をねじ曲げられました</li>
+<li>${^ENCODING} は気軽に使うべきではありません(PL_check PL_runloop もそうだけど)</li>
+</ul>
+
+</div>
+<div class="step" data-y="3200" data-x="0">
+<h2>まとめ</h2>
+
+<p>Acme っていうネタモジュールだから適当に作ってると思われがちですが、ただバカな事をするのではなく誰もマネをしないような実装手段を用いてアホな事するのが肝心でした。</p>
+
+</div>
+<div class="step" data-y="3200" data-x="1200">
+<h1>Metrics with Twitter</h1>
+
+</div>
+<div class="step" data-y="3200" data-x="2400">
+<h2>はじめ</h2>
+
+<p>今時のまともなWeb系起業はみんな GrowthForecast を使っていると思います。</p>
+
+<p>GrowthForecast を使わないとしても、グラフ化ツールを使ってサーバだけでは無いサービスの状態を見える化しているでしょう。</p>
+
+</div>
+<div class="step" data-y="3200" data-x="3600">
+<h2>もちろんはてなユーザは</h2>
+
+<p>はてなカウンターですね！</p>
+
+</div>
+<div class="step" data-y="3200" data-x="4800">
+<h2>僕の会社</h2>
+
+<p>僕のチームでも、ユーザ数やメタデータ数やコメント数裸威紅数、そのほか色々なデータ並びに手裏剣の販売数などもグラフに取っています。</p>
+
+<p>社内の情報をグラフに取るだけだと、関わってるプロジェクト界隈の全体的な兆候まで見れなくて井の中の蛇蛙になってしまいますよね。</p>
+
+<p>最近は競合のデータと自社データを、同じ条件で観測してグラフ化して全体的な傾向を取るような事もやっています。</p>
+
+</div>
+<div class="step" data-y="4000" data-x="0">
+<h2>どうやってる?</h2>
+
+</div>
+<div class="step" data-y="4000" data-x="1200">
+<h2>AnySan を使ってる</h2>
+
+<p>メッセージングプロトコルを統一したインターフェィスで使えるようにした bot 向けのフレームワーク。</p>
+
+<pre><code>use AnySan; use AnySan::Provider::IRC;
+my $irc = irc 'chat.example.net', nickname =&gt; 'AnySan1',
+    channels =&gt; { '#anysan1' =&gt; {}, };
+AnySan−&gt;register_listener( echo =&gt; { cb =&gt; sub {
+    my $receive = shift;
+    $receive−&gt;send_replay($receive−&gt;message);
+} } ); AnySan−&gt;run;
+</code></pre>
+
+</div>
+<div class="step" data-y="4000" data-x="2400">
+<h2>AnySan 対応プロトコル</h2>
+
+<ul>
+<li>IRC</li>
+<li>Twitter</li>
+<li>FriendFeed</li>
+<li>Skype</li>
+<li>Linger</li>
+</ul>
+
+</div>
+<div class="step" data-y="4000" data-x="3600">
+<h1>Twitter Streaming API を用いて、特定のつぶやきで且つ特定のアプリケーションから呟かれた数を集計する。</h1>
+
+</div>
+<div class="step" data-y="4000" data-x="4800">
+<h2>こんな感じになります</h2>
+
+<p>CENSORD</p>
+
+</div>
+<div class="step" data-y="4800" data-x="0">
+<h2>だいたいソースコード</h2>
+
+<p><img src="img/checkin.png" width="90%" /></p>
+
+</div>
+<div class="step" data-y="4800" data-x="1200">
+<h2>重要な事</h2>
+
+<p>自社サービスの使われ方の傾向と他社サービスとの違いがあるのかどうかというのを客観的に知る事ができます。</p>
+
+<p>特に「Twitter で tweet されている」という、自社/他社サービス問わず客観的に同じ条件でデータを取れると言うのが重要です。</p>
+
+<p>客観的な指標を取る事によりサービスの梶の切り方の参考になるかなーと思ってる。</p>
+
+</div>
+<div class="step" data-y="4800" data-x="2400">
+<h2>GrowthForecast の姉妹品のご紹介</h2>
+
+<p>最近かぜぶろ先生が新作を作っています。</p>
+
+<p><a href="https://github.com/kazeburo/HRForecast">https://github.com/kazeburo/HRForecast</a></p>
+
+</div>
+<div class="step" data-y="4800" data-x="3600">
+<h2>HR と GrowthForecast の違い</h2>
+
+<ul>
+<li>no RRDTool</li>
+<li>1時間単位で数字を集計する</li>
+<li>グラフレンダリングは今風の JS</li>
+<li>他のページにグラフを張る為の iframe API がある</li>
+</ul>
+
+<p>詳細は本人のリリース待ち。</p>
+
+<p>ちなみに業務に投入されています。</p>
+
+</div>
+<div class="step" data-y="4800" data-x="4800">
+<h2>まとめ</h2>
+
+<p>客観的なサービスメトリクスを取得する手段として Twitter を活用すると捗るという提案でした。</p>
+
+</div>
+<div class="step" data-y="5600" data-x="0">
+<h1>Big Regexp</h1>
+
+<p>最近の正規表現のトレンドと言えば...</p>
+
+</div>
+<div class="step" data-y="5600" data-x="1200">
+<h2>住所正規化 API</h2>
+
+<p><img src="img/techblog.png" width="100%" /></p>
+
+</div>
+<div class="step" data-y="5600" data-x="2400">
+<h2>まさか仕事になると思わなかった</h2>
+
+<p>この案件の基本的なエッセンスは6年前に発表しているのでさらっと説明。</p>
+
+<p>多分込み入った話は YAPC でやろうかなとも思ってるし。。。</p>
+
+</div>
+<div class="step" data-y="5600" data-x="3600">
+<h2>今回やるのは</h2>
+
+<p>過去のアウトプットからの差分ですね。</p>
+
+<p>メインは Proj::M::Normalize の実装の話。</p>
+
+</div>
+<div class="step" data-y="5600" data-x="4800">
+<h2>ハイフンの恐怖</h2>
+
+<p>住所の丁目番地を繋げる記号として - があるのですが、 Unicode 的にはグリフが似通っている MINUS SIGN とか EN DASH とかいっぱいあります。</p>
+
+<p>自由入力だと<strong>-ｰ・‐ー－−―─</strong>とかが、全て違う文字なのにハイフンっぽい文字になります。これらの文字も実際に使われてるのを目撃しました。</p>
+
+</div>
+<div class="step" data-y="6400" data-x="0">
+<h2>土地区画関連の表記も自由なのは置いといて</h2>
+
+</div>
+<div class="step" data-y="6400" data-x="1200">
+<h2>北海道さんはだいぶルールがシンプルになった</h2>
+
+<p>基本的に<strong>条</strong>が付く地名は<strong>[南北]X条[東西]Y丁目</strong>の用になるので、<strong>南6-西3-6</strong>は<strong>南六条西3丁目6</strong>の用に表記出来る。</p>
+
+<p><strong>[南北]X条</strong>の変わりに<strong>なんとか通</strong>を使う時もある。ただし<strong>なんとか通り</strong>の場合は、これらのルールとは違う街の作りになってる模様。</p>
+
+</div>
+<div class="step" data-y="6400" data-x="2400">
+<h2>石川県恐いよ</h2>
+
+<p>恐いので今回は飛ばします。</p>
+
+</div>
+<div class="step" data-y="6400" data-x="3600">
+<h2>丁目</h2>
+
+<p><strong>下田市一丁目</strong>のような<strong>丁目</strong>が付く字は北は東北、西は上京区元一丁目と結構ありました。</p>
+
+</div>
+<div class="step" data-y="6400" data-x="4800">
+<h2>本題の京都市ですが</h2>
+
+<p>やはり通り名表記と言うのがネックになってくるわけで、ジオドスさんの用に本気出せれば良いのですが検討した結果、住居表示に準拠させる事にしています。利便性を考えてサービスで使う場合は、そのまま表示してジオコーディングや同一住所チェックする時だけ通り名を削除するのがベターかなと考えてます。</p>
+
+</div>
+<div class="step" data-y="7200" data-x="0">
+<h2>通り名を抜くコード例(実際使ってるかはノーコメント)</h2>
+
+<pre><code># 通り部分を消す
+$address =~ s/.+?通り?//;
+# 入ったりあがったりくだったり消す
+$address =~ s/.+?[上下入][るル]//;
+# 東西南北に入るよ
+$address =~ s/.*?[東西南北](?:入[るル]?|へ)//g;
+</code></pre>
+
+</div>
+<div class="step" data-y="7200" data-x="1200">
+<h2>通り名を抜くコード例(実際使ってるかはノーコメント)</h2>
+
+<pre><code># 入ったりあがったりくだったり消す
+$address =~ s/.+?[東西南北][上下入]//;
+$address =~ s/.+?[上下][東西南北]側//;
+$address =~ s/^[東西南北]側//;
+# 角っこ消してみる
+$address =~ s/[東西南北]{1,2}角$//;
+# 側消す
+$address =~ s/[東西南北]側$//;
+# 先頭の丁目を消す
+$address =~ s/^\d+丁目//;
+</code></pre>
+
+</div>
+<div class="step" data-y="7200" data-x="2400">
+<h2>まとめ</h2>
+
+<p>仕事にならないだろうと思っててやってた事でも、いつの日か仕事になっちゃう冗談みたいな出来事が本当にあるので、ネタプログラミングでも本気で取り組みましょう。</p>
+
+<p>あと、京都市の住所の事勉強させてください＞＜</p>
+
+</div>
+<div class="step" data-y="7200" data-x="3600">
+<h1>MySQL UDF</h1>
+
+<p>ここまで来たら多分時間ないだろうから飛ばしてもOKだけど、時間が余れば住所正規化 UDF 作ったついでに距離計測 UDF やらジオコーディング周り UDF を作って、そこそこ UDF に慣れたので実際のコードを見ながら説明したいなと。</p>
+
+</div>
+<div class="step" data-y="7200" data-x="4800">
+<h2>まとめ</h2>
+
+<p>MySQL UDF 作るのは簡単</p>
+
+</div>
+<div class="step" data-y="8000" data-x="0">
+<h1>超 LT</h1>
+
+</div>
+<div class="step" data-y="8000" data-x="1200">
+<h2>このプレゼンツールに関して</h2>
+
+<p>最近 impress.js っていうプレゼンツールが流行っているそうなんですが、一昨日会社の技術勉強会的なので clouder さんが markdown 記法から、このツールに変換するのを書いたという発表をしたので早速使いました。</p>
+
+</div>
+<div class="step" data-y="8000" data-x="2400">
+<h2>リポジトリはこちら</h2>
+
+<p><a href="https://github.com/yoshiki/markdown2impress">https://github.com/yoshiki/markdown2impress</a></p>
+
+<p>ちょっと気にくわないとこあったので僕もパッチ送るのでみんなも使ってぱっちおくりまっしょい！</p>
+
+</div>
+<div class="step" data-y="8000" data-x="3600">
+<h1>ご清聴ありがとうございました</h1>
+
+<p>まえの LDeNA #1 で、二社+1名の合同勉強会だと言うのに、プレゼンの最後にリクルーティングのスライド入れてたせいだかんだかわかりませんが、今回は自重しとく空気っぽいですが一緒に働ける機会があったら働きましょう！続きは Web で。</p>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
