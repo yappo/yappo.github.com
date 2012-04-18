@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div id="title" class="step" data-y="0" data-x="0">
+<h1>Perl 5.16 Updates @ Hokkaido.pm Causal #01</h1>
+
+<p><address>Yappo: yappo あっと shibuya.pl<br /> hikarie Perl Mongers</address></p>
+
+</div>
+<div class="step" data-y="0" data-x="1200">
+<h2>あ</h2>
+
+<p>Casual な会だという事で来月出るって噂の Perl 5.16 の新機能をカジュアルに紹介します。</p>
+
+</div>
+<div class="step" data-y="0" data-x="2400">
+<h2>installing</h2>
+
+<p>今はまだリリースされてないので近い状態の 5.15.9 を</p>
+
+<pre><code>$ curl -kL http://install.perlbrew.pl | bash
+$ perlbrew install perl-5.15.9
+$ perlbrew switch perl-5.15.9
+</code></pre>
+
+</div>
+<div class="step" data-y="0" data-x="3600">
+<h2>ちなむと</h2>
+
+<p>5.10 とは違って 5.12 以降は一年おきに出そうっていう目標でリリースサイクルでやってるので、 5.14 から 5.16 への変更点って 5.8 から 5.10 と比べて少ないです。
+あと、最近の最新版はだいぶ安定してるので気軽に最新版に出来ますし、よっぽどじゃ無ければ 5.8 とかのコードも動きます。
+ついでに言うと 5.16 が出ると 5.12 以前のバージョンは一応サポート対象外となりますが、安定してるのでバージョン代えなくても問題にならないし、気になるなら少し頑張ってバージョン上げるなりするといいのかな。</p>
+
+<p>PHP も似たようなサイクルだった。</p>
+
+</div>
+<div class="step" data-y="0" data-x="4800">
+<h1>本題</h1>
+
+</div>
+<div class="step" data-y="800" data-x="0">
+<h2>More CORE subs are callable through references</h2>
+
+<p>Perl5 Core Function の CODE reference が取れるようになった。
+一般ユーザの使いどころはわからないけど、ライブラリ開発者が捗るのかな?</p>
+
+<pre><code>use strict;
+use warnings;
+use 5.015;
+my $time = \&amp;CORE::time;
+warn $time-&gt;();
+</code></pre>
+
+</div>
+<div class="step" data-y="800" data-x="1200">
+<h2>Unicode Symbol Names</h2>
+
+<p>シンボル名への utf8 サポートが行われました。
+utf8 フラグ付きの関数名を caller で取る時も utf8 フラグが付くようになりますし、 utf8 フラグを付けてシンボルテーブルから取り出す必要があります。他にも bless, tie goto...</p>
+
+</div>
+<div class="step" data-y="800" data-x="2400">
+<h2>Unicode Symbol Names (code)</h2>
+
+<pre><code>use strict;use warnings;use 5.015;use utf8;
+sub 北海道 { say('札幌') }
+my $hokkaido = \&amp;{"北海道"};
+$hokkaido-&gt;();
+do {
+    no utf8;
+    # utf8 フラグ立ってないのでシンボル名解決出来ない                                                                        
+    my $hokkaido = \&amp;{"北海道"};
+    $hokkaido-&gt;();
+};
+</code></pre>
+
+</div>
+<div class="step" data-y="800" data-x="3600">
+<h2>Support for Embedded Nulls</h2>
+
+<p>今まで文字列変数に \0 が入ってると、様々な場面で文字列が \0 以前で終端に達していたが、その挙動が無くなった。
+\0 は \0 として内部的に扱われるようになった。</p>
+
+</div>
+<div class="step" data-y="800" data-x="4800">
+<h2>Support for Embedded Nulls code</h2>
+
+<pre><code>use strict;use warnings;use 5.015;
+sub foo { say('bar') }
+main-&gt;foo;
+my $baz = "foo\0hoge";
+{ no strict 'refs';
+    *{$baz} = sub { say($baz) } ;}
+main-&gt;$baz; # 5.16 before/after で呼ばれるメソッドが変わる
+</code></pre>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2>Autoloaded sort Subroutines</h2>
+
+<p>sort の第一引数に渡す関数名が AUTOLOAD に対応した。ので、柔軟な sort 関数作れるかもだけど、使いどころだいぶ casual じゃなさそう。</p>
+
+</div>
+<div class="step" data-y="1600" data-x="1200">
+<h2>Autoloaded sort Subroutines code 1/2</h2>
+
+<pre><code>use strict;use warnings;use 5.015;
+use Test::More;our $AUTOLOAD;
+sub AUTOLOAD {
+    my($key) = $AUTOLOAD =~ /([^:]+)$/;
+    return 0 if $a eq $b;
+    return -1 if $a eq $key;
+    return 1 if $b eq $key;
+    return 0;
+}
+</code></pre>
+
+</div>
+<div class="step" data-y="1600" data-x="2400">
+<h2>Autoloaded sort Subroutines code 2/2</h2>
+
+<pre><code>my @list = qw/ foo bar baz /;
+my @foo = sort foo @list;
+is($foo[0], 'foo');
+my @bar = sort bar @list;
+is($bar[0], 'bar');
+my @baz = sort baz @list;
+is($baz[0], 'baz');
+done_testing;
+</code></pre>
+
+</div>
+<div class="step" data-y="1600" data-x="3600">
+<h2>__SUB__</h2>
+
+<p>今現在のサブルーチンのコードリファレンスを返します。
+再帰処理するクロージャを簡単に書くのに便利っぽい。</p>
+
+<pre><code>use strict;
+use warnings;
+use 5.015;
+my $foo = sub {
+    @_ ? say(@_) : __SUB__;
+};
+$foo-&gt;()-&gt;('bar');
+</code></pre>
+
+</div>
+<div class="step" data-y="1600" data-x="4800">
+<h2>"no feature;" now means reset to default</h2>
+
+<p>no feature; を使えば default 状態に戻せる。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="0">
+<h2>New function "fc" and corresponding escape sequence "\F" for Unicode foldcase</h2>
+
+<p>fc 関数追加された。なにこれ？
+case fold が云々らしいけど、良くわかってない。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="1200">
+<h2>Supports (almost) Unicode 6.1</h2>
+
+<p>そのまんま。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="2400">
+<h2>まとめ</h2>
+
+<p>Perl 5.16 の新要素で僕がちょっと興味引いた物の紹介をしました。5.10から5.14の間のトピックスを知りたい人は、来週出る Web+DB PRESS の Perl 連載で cho45 先生が言及してるので読むとよいでしょう。<br />
+<a href="http://www.amazon.co.jp/dp/4774150312/yappo-22/ref=nosim/"><img src="img/wdb.jpg" width="12%" /></a></p>
+
+</div>
+<div class="step" data-y="2400" data-x="3600">
+<h1>ご清聴有り難うございました</h1>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
