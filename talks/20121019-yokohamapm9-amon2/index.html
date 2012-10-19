@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div id="title" class="step" data-y="0" data-x="0">
+<h1>10 Amon2 実践 Tips</h1>
+
+<p>yappo</p>
+
+</div>
+<div class="step" data-y="0" data-x="1200">
+<h2>概要</h2>
+
+<p>話す事まとまらなかったので、僕の最近作ったアプリを元にダラダラ話します。</p>
+
+</div>
+<div class="step" data-y="0" data-x="2400">
+<h2>perlbrew in project dir</h2>
+
+<p>依存モジュールの管理は悩ましいですが、プロジェクトの basedir 直下に perlbrew をセットアップして、そこにモジュールをつっこんでおくと、 perl バイナリと依存モジュールとプロジェクトファイルが一元管理出来て楽でした。
+結局依存モジュールのバージョン管理もかねる事になるので carton も使わなくて問題無し。</p>
+
+<pre><code>PERLBREW_ROOT=/home/projects/bokete/perl5 perlbrew init
+</code></pre>
+
+</div>
+<div class="step" data-y="0" data-x="3600">
+<h2>cpanm</h2>
+
+<p>この perlbrew 環境で捗る cpanm のラッパーをつっこんで使ってる。</p>
+
+<pre><code>#!/bin/sh
+/home/projects/bokete/perl5/perls/perl-5.16.1/bin/perl /home/projects/bokete/perl5/bin/cpanm $@
+</code></pre>
+
+</div>
+<div class="step" data-y="0" data-x="4800">
+<h2>plackup</h2>
+
+<p>開発環境、ステージング環境、本番環境、テスト環境とかで PLACK_ENV を変えたりしてるので、 daemontools の run ファイルを完結にするような感じで簡易なランチャーを作ってる。</p>
+
+<p>基本的に、他のプロジェクトからパクって来たんだけど再利用生高い。</p>
+
+</div>
+<div class="step" data-y="800" data-x="0">
+<h2>run-psgi</h2>
+
+<p>run ファイルもこんな感じで書ける。</p>
+
+<pre><code>#!/bin/sh
+export PLACK_ENV=production
+exec /bin/sh /home/projects/bokete/scripts/run-psgi app.psgi 1914 15
+</code></pre>
+
+</div>
+<div class="step" data-y="800" data-x="1200">
+<h2>config/batch.pl</h2>
+
+<p>batch 処理用の場合には production の設定からちょっと変更させる場合もあるので、一部読み込んでちょろっと変更するとかやる。</p>
+
+<pre><code>use strict;
+use warnings;
+use File::Spec;
+use File::Basename qw(dirname);
+use File::RotateLogs;
+my $basedir = File::Spec-&gt;rel2abs(File::Spec-&gt;catdir(dirname(__FILE__), '..'));
+my $config = do File::Spec-&gt;catfile($basedir, 'config', 'production.pl');
+$config-&gt;{DBI_slave} = 'nanntara';
+$config;
+</code></pre>
+
+</div>
+<div class="step" data-y="800" data-x="2400">
+<h2>ここまでで半分おわり</h2>
+
+<p><img src="imgs/neco.jpg" /></p>
+
+</div>
+<div class="step" data-y="800" data-x="3600">
+<h2>batch 用のランチャー</h2>
+
+<p>batch 処理を起動するときは、諸々環境変数とかをセットアップしておいてくれるランチャー経由で呼び出すと運用がらくだし crontab の呼び出しも安心安全。</p>
+
+<pre><code>#!/bin/sh
+export PLACK_ENV=batch
+_app_root=$(cd `dirname $0`/.. &amp;&amp; pwd -P)
+export PATH=$_app_root/perl5/perls/perl-5.16.1/bin:/usr/local/bin:$PATH
+export PERL5LIB=$_app_root/lib
+exec "$@"
+</code></pre>
+
+</div>
+<div class="step" data-y="800" data-x="4800">
+<h2>CLI ha bootstrap</h2>
+
+<p>CLI を書きたいときは context class の bootstrap をよんどけば、良い感じになってる。</p>
+
+<pre><code>my $c = Bokete-&gt;bootstrap;
+$c-&gt;dbh-&gt;selectall_arrayref(q{SELECT ....
+</code></pre>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2>no Amon2::DBI</h2>
+
+<p>だいたいの業務プロダクトには ORM は不要だけど、そもそも Amon2::DBI とかも使わなくておk
+context class に dbh メソッド生やしとけばいいよ</p>
+
+<pre><code>sub dbh {
+    my $self = shift;
+    $self-&gt;{dbh} //= DBI-&gt;connect(@{ $self-&gt;config-&gt;{DBI} });
+}
+sub dbh_slave {
+    my $self = shift;
+    return $self-&gt;dbh if $self-&gt;{FORCE_MASTER};
+    return $self-&gt;{dbh_slave} //= DBI-&gt;connect(@{ $self-&gt;config-&gt;{DBI_slave} });
+}
+</code></pre>
+
+</div>
+<div class="step" data-y="1600" data-x="1200">
+<h2>logging</h2>
+
+<p>CLI/Web の差異で悩まずログ取りたいなと思った結果 context class にメソッド生やせばいいと結論になった。</p>
+
+<pre><code>sub log {
+    my($self, $level, $message) = @_;
+    $self-&gt;{logger} //= File::RotateLogs-&gt;new(
+        %{ $self-&gt;config-&gt;{Log}{'File::RotateLogs'} }
+    );
+    return if $self-&gt;config-&gt;{Log}{ignore_levels}{$level};
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime(time);
+    my $time    = sprintf(
+        "%04d-%02d-%02dT%02d:%02d:%02d",
+        $year + 1900,
+        $mon + 1, $mday, $hour, $min, $sec
+    );
+    my(undef, $file, $line) = caller(0);
+    $self-&gt;{logger}-&gt;print("[$time] [$$] [$level] $message at $file line $line.\n");
+}
+</code></pre>
+
+<p>logdir は deploy や config/*.pl の適切なタイミングで mkdir やパーミッション設定をしておくとスケールしやすい。</p>
+
+</div>
+<div class="step" data-y="1600" data-x="2400">
+<h2>$c は引き回さない</h2>
+
+<p>global 変数使わないっていう制約をあえて忘れて、 Amon2->context を使って $c を引き回さないようにする。ちゃんとアプリケーションが boot </p>
+
+<pre><code>package Bokete::Data::Odai {
+    sub c { Bokete-&gt;context }
+    sub fetch_random {
+       my $class = shift;
+       $class-&gt;c-&gt;dbh-&gt;...;
+    }
+}
+</code></pre>
+
+<p>親クラス側に c を生やして敬称して使い回わしてもおk。</p>
+
+</div>
+<div class="step" data-y="1600" data-x="3600">
+<h2>*::Web はさっさと奇麗にする</h2>
+
+<p>つかわないぷらぐいんとかトリガーせっていいっぱいあるので、さっさと奇麗にするが吉</p>
+
+</div>
+<div class="step" data-y="1600" data-x="4800">
+<h2>まとめ</h2>
+
+<p>Amon2 は薄くて安心安全なので、自由に使えば良いけどベストプラクティスをもうちょい共有しよう。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="0">
+<h1>以上です</h1>
+
+</div>
+<div class="step" data-y="2400" data-x="1200">
+<h2>ということでドラクエ10の話です</h2>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
