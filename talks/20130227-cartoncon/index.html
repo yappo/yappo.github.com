@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div id="title" class="step" data-y="0" data-x="0">
+<h1>carton in amon2-livedoor-setup.pl</h1>
+
+<p><address>Yappo</address></p>
+
+</div>
+<div class="step" data-y="0" data-x="1200">
+<h2>基本</h2>
+
+<p>ちょいちょい新規アプリを作る事が多いので Amon2 を使った雛形アプリを簡単に作れるスクリプト書いてた。
+社内の仕様に特化した設定や、社内ライブラリ、デプロイツールなどが一発で入る君。</p>
+
+<p>作り始めだから、特定の種類のアプリケーションに特化させてた。</p>
+
+</div>
+<div class="step" data-y="0" data-x="2400">
+<h2>使ってる環境</h2>
+
+<p>carton 0.9.10
+cpanm 1.6000</p>
+
+</div>
+<div class="step" data-y="0" data-x="3600">
+<h2>古い carton 使ってる人と仕事するとき</h2>
+
+<pre><code>in Makefile.PL
+
+my $file = Module::CPANfile-&gt;load("cpanfile");
+$file-&gt;merge_meta('MYMETA.json');
+$file-&gt;merge_meta('MYMETA.yml');
+</code></pre>
+
+</div>
+<div class="step" data-y="0" data-x="4800">
+<h2>before</h2>
+
+<p>carton 今いちわからないし、使ってる人 ikasama さんくらいしか居ないしで単純な対応してた。</p>
+
+<p>setup script 叩いたら</p>
+
+<pre><code>export PERLBREW_ROOT=/home/user/[% appname %]
+export PERLBREW_HOME=/home/user/[% appname %]
+perlbrew install perl-5.16.2
+</code></pre>
+
+<p>して perl 作って、プロダクトのリポジトリに丸ごといれてね！ってやってた。</p>
+
+</div>
+<div class="step" data-y="800" data-x="0">
+<h2>良い所</h2>
+
+<ul>
+<li>何でも感でも /home/user/[% appname %]/perl5 の中にインストールされて全部リポジトリ管理されるので、バージョン固定とか気にしなくても固定される</li>
+<li>git clone しただけで動作可能になる</li>
+</ul>
+
+</div>
+<div class="step" data-y="800" data-x="1200">
+<h2>悪い所</h2>
+
+<ul>
+<li>沢山のプロジェクトでこの手法やってたらもったいないお化けでてくる(凝った画像使ったサイトだったら、そっちのが容量食うけど)</li>
+<li>初回の git clone だるい</li>
+</ul>
+
+</div>
+<div class="step" data-y="800" data-x="2400">
+<h2>思い直した</h2>
+
+<ul>
+<li>いかさまさんに「別に carton 使って捗る事ないから、全部リポジトリぶっ込めばいいじゃん」とか言ってたけど carton が汎用性感でてきたから使ってみる事にした</li>
+<li>依存ライブラリがちゃんと管理出来てれば手法とかどうでもいいんだけど、やっぱりリポジトリの中にプロジェクトの関連度が低いの入ってるのよく無い感もあった</li>
+<li>社内で使いだしてて、やっと実践のしかた知ったというのもデカイ</li>
+</ul>
+
+</div>
+<div class="step" data-y="800" data-x="3600">
+<h2>言われた</h2>
+
+<ul>
+<li>雛形作って最初に carton install するとき、毎回ネットワークから落とすの遅くなるからどうにかして！</li>
+<li>そうだ！ bundle 作ってつっこんどけばいいんだ！</li>
+</ul>
+
+</div>
+<div class="step" data-y="800" data-x="4800">
+<h2>セットアップツールで使う bundle 作り</h2>
+
+<ul>
+<li>amon2-livedoor-setup.pl に cpanfile を出力するようにテンプレしこむ</li>
+<li>perl amon2-livedoor-setup.pl Gfx として適当なプロジェクトを作る</li>
+<li>cd gfx; carton install; carton bundle; ってやって、 local/cache が出来るまでひたすらまつ</li>
+<li>そのままだと cache/local/modules/02packages.details.txt.gz が出来てなくて、悲しくなる</li>
+</ul>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2>悲しさを乗り越える</h2>
+
+<ul>
+<li>gzip .carton/02packages.details.txt; mkdir local/cache/modules; mv .carton/02packages.details.txt local/cache/modules</li>
+<li>ここで出来上がった物を local/cache ディレクトリを amon2-livedoor-setup.pl のリポジトリの中に dependence-libs とかいうディレクトリにしておいとく</li>
+</ul>
+
+</div>
+<div class="step" data-y="1600" data-x="1200">
+<h2>セットアップツールで bundle 使う</h2>
+
+<p>セットアップツールの処理の最後らへんに</p>
+
+<pre><code>!system "mkdir local" or die $?;
+!system "ln -s $FindBin::Bin/dependent-libs local/cache" or die $?;
+!system "perl -e 'print qq{\n} while (1)' | carton install --cached" or die $?;
+!system "rm local/cache" or die $?;
+</code></pre>
+
+<p>とかすると、セットアップツールの中の bundle 達からインストールしてくれる。</p>
+
+</div>
+<div class="step" data-y="1600" data-x="2400">
+<h2>感想</h2>
+
+<p>ダウンロード速度よりもなんかインストール自体に時間かかってね?</p>
+
+</div>
+<div class="step" data-y="1600" data-x="3600">
+<h2>開発環境での carton</h2>
+
+<p>簡単です！</p>
+
+<ul>
+<li>git clone する</li>
+<li>cd する</li>
+<li>carton install する</li>
+</ul>
+
+<p>以上！</p>
+
+</div>
+<div class="step" data-y="1600" data-x="4800">
+<h2>CI での carton</h2>
+
+<ul>
+<li>ukigumo ようのディレクトリで ~/.ukigumo/[% appname %] を掘る</li>
+<li>そこにプロジェクトを git clone or pull</li>
+<li>carton install する。なんか carton.lock が更新されるので git checkout carton.lock する</li>
+<li>あとは prove -r t &amp;> $tmp</li>
+</ul>
+
+</div>
+<div class="step" data-y="2400" data-x="0">
+<h2>.proverc</h2>
+
+<pre><code>"--exec=carton exec -Ilib -I. -- perl -Mlib::core::only"
+-Pretty
+--color
+-v
+</code></pre>
+
+</div>
+<div class="step" data-y="2400" data-x="1200">
+<h2>prove plugin</h2>
+
+<p>prove plugin で使ってるモジュールは carton 配下のみに入れてると起動失敗するので、 global のとこに cpanm App::Prove::Plugin::Pretty とか入れてる。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="2400">
+<h2>デプロイする時の carton</h2>
+
+<ul>
+<li>deploy はだいたいのケースで rsync やってる</li>
+<li>rsync する元のファイル構造を /foo/bar/deploy_base/projname みたいな所に git clone しといて、次の deploy からは、そこで pull &amp; submodule update してく</li>
+<li>毎回 carton install するけど、なんか carton.lock が更新されるから毎回 git checkout carton.lock して無かった事にしてる</li>
+</ul>
+
+</div>
+<div class="step" data-y="2400" data-x="3600">
+<h2>rsync</h2>
+
+<p>あとは普通に</p>
+
+<pre><code>rsync -a --delete --exclude=META.yml --exclude=MYMETA.json --exclude=MYMETA.yml --exclude=carton.lock --exclude=.carton /foo/bar/deploy_base/projname tohost:/dokka/no/dir
+</code></pre>
+
+<p>とかして配布する</p>
+
+</div>
+<div class="step" data-y="2400" data-x="4800">
+<h2>その他のスクリプト起動</h2>
+
+<p>基本的に carton は使わないで</p>
+
+<pre><code>#!/bin/sh
+export PLACK_ENV=production
+export PERL5LIB=$PROJECT_ROOT/local/lib/perl5:$PROJECT_ROOT/lib
+export PERL5OPT="-Mlib::core::only -Mlib=$PROJECT_ROOT/lib -Mlib=$PROJECT_ROOT/local/lib/perl5"
+PROJECT_ROOT=$(cd `dirname $0`/.. &amp;&amp; pwd -P)
+exec "$@"
+</code></pre>
+
+<p>みたいな環境変数をセットしてくれるラッパースクリプトかましてる。</p>
+
+</div>
+<div class="step" data-y="3200" data-x="0">
+<h2>まとめ</h2>
+
+<p>とくにない</p>
+
+</div>
+<div class="step" data-y="3200" data-x="1200">
+<h1>以上です</h1>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
