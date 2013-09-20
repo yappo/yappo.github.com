@@ -1,0 +1,942 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div id="title" class="step" data-y="0" data-x="0">
+<h1>社内開発簡単化と世界で戦う開発を考える技術</h1>
+
+<p><address>Yappo</address></p>
+
+</div>
+<div class="step" data-y="0" data-x="1200">
+<h2>今回の目的</h2>
+
+<p>僕がこの一年の間に言われた仕事と関係無くやってた事の成果を発表します。</p>
+
+</div>
+<div class="step" data-y="0" data-x="2400">
+<h2>Development Framework</h2>
+
+<p>「サービス固有のコードを書く事に集中できる環境を提供する」というのが WAF(Web Application Framework)の役割の一つではありますが、オープンな WAF という物は得てして社内事情を考慮しないものなので、結果的に「社内事情の多岐に渡る作業」を開発者が行うハメになります。
+このセッションでは、既存の WAF をうまく利用しつつ社内事情を考慮した雛形を作る事で、真の「サービス固有のコードを書く事に集中できる環境を提供」を目指したお話になります。</p>
+
+</div>
+<div class="step" data-y="0" data-x="3600">
+<h2>ミッションステートメント</h2>
+
+<p>ここ数年の間に YAPC::Asia では発表されてこなかった、<span style="color: red;">仕事で実用的</span>なWeb アプリケーション開発の話をします。
+特に毎月何個もサービスをリリースするような環境で必要になってくる、プロジェクトの雛形を作る時の考え方その実装時の知見をシェアします。
+話の前提として Amon2 を利用した開発を前提とする。
+また、その雛形開発の副産物となる実装の紹介をします。</p>
+
+<p>具体的には、このプレゼンの後に僕の働いてる会社にエントリーして、無事ぼくと一緒に開発するようになった時に知っとくと得する情報ばかりです。</p>
+
+</div>
+<div class="step" data-y="0" data-x="4800">
+<h2>Team Geek 良い本でした</h2>
+
+<p>kdmsnr さんから贈呈してもらった Team Geek は、割と当たり前の事をしっかりと活字になっているので良い本です。わりと僕は反省しました。</p>
+
+<p>最初にミッションステートメントを書いておくとぶれなくていいって Team Geek にも書いてありました。</p>
+
+</div>
+<div class="step" data-y="800" data-x="0">
+<h2>アジェンダ</h2>
+
+<ul>
+<li>ありがちな開発手順</li>
+<li>雛形作成のポイント</li>
+<li>雛形作り直しに、反省ポイント</li>
+<li>Ksgk</li>
+<li>その他の成果物など</li>
+<li>継続的開発、運用的視点</li>
+</ul>
+
+</div>
+<div class="step" data-y="800" data-x="1200">
+<h2>注</h2>
+
+<p>このプレゼンで言及される環境は、特定の会社に限定されるわけでは無いです。色々混じってます。
+あと、一部誇張してる所もあります。</p>
+
+</div>
+<div class="step" data-y="800" data-x="2400">
+<h1>ありがちな開発手順</h1>
+
+</div>
+<div class="step" data-y="800" data-x="3600">
+<h2>例えば Amon2 を使ってたら</h2>
+
+<pre><code>$ amon2-setup.pl BeerMoris
+</code></pre>
+
+<p>などのように WAF 標準のセットアップスクリプトを使って雛形を作る。</p>
+
+<p>これは机が飛んでくる事例です。(僕らはインフラじゃないので椅子が使えません)</p>
+
+</div>
+<div class="step" data-y="800" data-x="4800">
+<h2>僕らはエンジニアの端くれなので、悪い所を具体的に言えなければなりません。このケースでは何でしょう?</h2>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2>ただ一つのデメリット</h2>
+
+<p><span style="color: red;">社内環境が一切考慮されていない</span></p>
+
+</div>
+<div class="step" data-y="1600" data-x="1200">
+<h2>Q. それでも標準 setup script を使う理由?</h2>
+
+</div>
+<div class="step" data-y="1600" data-x="2400">
+<h2>A. startup なので当面はサービスが一つだけ</h2>
+
+<p>机返して下さい。すみませんでした。
+社内インフラも何も決まってない状態で雛形とか言って本当にごめんなさい。
+サービスがリリースされた後には、管理画面や別サービス等のプロジェクトを始める事があると思うので、その時に開発環境の標準化を一緒に考えた方が確実です。</p>
+
+</div>
+<div class="step" data-y="1600" data-x="3600">
+<h2>A. WAF とかみんな好き勝手に使ってるし、俺は俺WAF作ってるし</h2>
+
+<p>好き勝手に使ってるのが良いか悪いかは判断出来ないけど、突然隣の同僚が病欠になってしまって急に良くわからないWAFで書かれたコードのメンテをする事になって、初日から障害多発とかいう状況になったら嫌でしょ?</p>
+
+</div>
+<div class="step" data-y="1600" data-x="4800">
+<h2>2/2</h2>
+
+<p>なるべくなら使う道具は揃えておいた方がノウハウ溜まりやすいし誰かが助けてくれやすくなるし、社外でも使われている物を使うと新しい人の学習コストも下がるかもしれないし、誤差かもしれない。し、開発コストってそういう所じゃなかったりするのが社会の厳しさ。あと歴史ある会社だと層も言ってらんないけど、新しいプロジェクトくらいはなんとかしたいね。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="0">
+<h2>A. 特に何も考えてない</h2>
+
+<p>僕と一緒に考えましょう。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="1200">
+<h2>A. 足りない部分は、既存のプロジェクトからコピペするよ</h2>
+
+<p>普段はコピペプログラミング嫌ってるくせに、どうせ最初だけだからって気にする事無くやりがち。「最近始まった開発プロジェクトはあれだから、あれ使っとけば大丈夫！」とか良くわからない自信で使うんですよね。ミドルウェアとかは標準的に統一されてたりするとちょっと残念。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="2400">
+<h2>コピペ駆動開発デメリット</h2>
+
+<ul>
+<li>設定ファイルの内容を誰も説明出来ない秘伝のタレとカス</li>
+<li>httpd の設定が自由すぎて、インフラの人が欲しいログフォーマット吐いてなくて椅子が飛んでくる</li>
+<li>コピペ忘れでバグってハマって時間無駄にする</li>
+<li>コピペ元の人はコピペされてる事を意識してないから、自分のとこだけバグ直して follower のバグは治らない</li>
+<li>新人の人が路頭に迷う</li>
+</ul>
+
+</div>
+<div class="step" data-y="2400" data-x="3600">
+<h2>特に問題なのが</h2>
+
+<p>基本的な WAF の雛形に補足する形で社内事情に特化したコードをコピペ量産するので、ノウハウが固まらなかったりバグ修正情報が周知されない、周知されても自分が関係しているかがわからなくて危険な状態になる。
+あとは、新しく入ってきた開発者が、新規開発をする時にドキュメントがあったとしても既存の社内開発の流儀を他のプロジェクトのコードから学習しないと安心して開発出来ないケースがでてくる。</p>
+
+</div>
+<div class="step" data-y="2400" data-x="4800">
+<h2>社内開発環境の雛形で捗る</h2>
+
+<p>コピペ駆動開発のデメリットを無くす為の社内標準雛形。</p>
+
+</div>
+<div class="step" data-y="3200" data-x="0">
+<h2>雛形以外の統一化手段</h2>
+
+<p>社内固有の API を利用する為のモジュール等は、独立した社内用モジュールとして実装してリポジトリ管理をするべきです。もちろん一般的な会社では社内用モジュールを作ってメンテナンスして居ると思います。
+しかし、社内モジュールは部品にすぎないので、それを実際のアプリケーションで利用するには手作業で実装を進める必要があります。
+社内標準雛形を作ると、こういった部分の手間もカバーするように作り込めるので、社内モジュールとは違った角度での恩恵を受けられます。</p>
+
+</div>
+<div class="step" data-y="3200" data-x="1200">
+<h1>雛形作成のポイント</h1>
+
+</div>
+<div class="step" data-y="3200" data-x="2400">
+<h2>バランスが大事</h2>
+
+<p>実用的な社内標準的な雛形を作る一番のポイントがバランスです。</p>
+
+<p>たとえば、位置情報系サービスを1つ作れば十分な会社なのに、その雛形位置情報サービスを提供する為のイロハを全て入れるのは無駄です。標準の雛形に機能を詰め込みすぎると今度は不要な実装を削除する手間がかかってしまい、結局無かった方が良いと思われてしまいます。</p>
+
+</div>
+<div class="step" data-y="3200" data-x="3600">
+<h2>社内ルールを意識する</h2>
+
+<p>どの会社にもある固有のルールに適した雛形を作るべきです。</p>
+
+<ul>
+<li>フロントは nginx</li>
+<li>plackup は daemontools で管理</li>
+</ul>
+
+<p>こういった開発ルールが有る場合には、雛形を生成する時に nginx の設定ファイルや daemontools の run ファイルを一緒に作るべきです。</p>
+
+</div>
+<div class="step" data-y="3200" data-x="4800">
+<h2>社内独自の設定等は予め書いておく</h2>
+
+<p>例えば Ikachan Server や GrowthForecast など、社内用のツールが予め提供されている場合には、開発者が簡単に利用出来るような形のモジュールやスクリプトを予め提供するようにします。事前に提供する事により開発者が利用する敷居が低くなり、結果的に良質な開発サイクルにする事が出来ます。</p>
+
+</div>
+<div class="step" data-y="4000" data-x="0">
+<h2>開発から本運用に必要なすべてを盛り込む</h2>
+
+<p>開発者が雛形を生成してから、サービスリリースを行う為に必要な全てのツールは予め提供しておくべきです。</p>
+
+<pre><code>schema loader, deploy tools, CI tools, run file, batch loader, translate data loader, sass/scss, js/css packer, etc etc
+</code></pre>
+
+<p>ただし、専用のミドルウェアを使っている箇所は省くなり、それの設定ファイルを標準で提供するべきです。</p>
+
+</div>
+<div class="step" data-y="4000" data-x="1200">
+<h2>既存の WAF に足りない事を補う</h2>
+
+<p>結果的にはこれは自社 WAF を作った事になります。
+Amon2 は、とても小さな WAF なため、いわゆる use parent 'Amon2' をしている context class の拡張が簡単になっていて、コードの見た目にもわかりやすいメンテしやすい雛形を作れています。</p>
+
+</div>
+<div class="step" data-y="4000" data-x="2400">
+<h1>そして僕は作った</h1>
+
+</div>
+<div class="step" data-y="4000" data-x="3600">
+<h2>amon2-livedoor-setup.pl</h2>
+
+<ul>
+<li>amon2-setup.pl based script</li>
+<li><p>default implementation</p>
+
+<p>DB Class, Model, Validation, Exceptions, Constants, Xslate warn_handler, sample controller, ikachan, Teng Schema Dumper, stf tool-kit, ServerStatus::Lite, DBIx::QueryLog, IsuDefender, proclet, ukigumo, growthforecast, application luncher, deploy tools, daemontools, nginx, apache, development server setup script</p></li>
+</ul>
+
+</div>
+<div class="step" data-y="4000" data-x="4800">
+<h2>実際の雛形をちょっと出し</h2>
+
+</div>
+<div class="step" data-y="4800" data-x="0">
+<h2>file: lib/$path/M.pm</h2>
+
+<pre><code>use Data::FormValidator;
+use [% module %]::Exceptions;
+</code></pre>
+
+<p>model の error 処理を例外でやってるのが嫌なんだけどいい方法なかなかみっかってない。</p>
+
+</div>
+<div class="step" data-y="4800" data-x="1200">
+<h2>file: lib/$path/Web/C/Root.pm</h2>
+
+<p><img src="controller.png" /></p>
+
+<p>error の見つけ方があんま良くない。。</p>
+
+</div>
+<div class="step" data-y="4800" data-x="2400">
+<h2>file: lib/$path/DB/Slave.pm</h2>
+
+<pre><code>use parent qw([% module %]::DB); # use Teng
+for my $method (qw/ insert fast_insert bulk_insert ...  txn_rollback txn_end do /) {
+ no strict 'refs';
+ *{$method} = sub { die "[% module %]::DB::Slave は slave 用クラスなのに $method を呼び出すなんてとんでもない！！！" };
+}
+</code></pre>
+
+</div>
+<div class="step" data-y="4800" data-x="3600">
+<h2>file: lib/$path/Exceptions.pm</h2>
+
+<pre><code>package [% module %]::Exception;
+use parent 'Exception::Tiny';
+use Class::Accessor::Lite ( ro =&gt; [qw/ code message /] );
+</code></pre>
+
+</div>
+<div class="step" data-y="4800" data-x="4800">
+<h2>file: lib/$path/Constants.pm</h2>
+
+<pre><code>package [% module %]::Constants;
+package [% module %];
+use constant {
+  FOO =&gt; 1,
+}; # is([% module %]-&gt;FOO, 1);
+</code></pre>
+
+</div>
+<div class="step" data-y="5600" data-x="0">
+<h2>file: lib/$path/Web/View.pm</h2>
+
+<p><img src="view.png" /></p>
+
+</div>
+<div class="step" data-y="5600" data-x="1200">
+<h2>devtools/chk-deploy-config.pl</h2>
+
+<pre><code>my $dev_config = do('conf/dev.pl') or die $!;
+my $pro_config = do('conf/pro.pl') or die $!;
+my $has_error = 0;
+for my $key (sort keys %$dev_config) {
+ unless (exists $pro_config-&gt;{$key}) {
+   warn "key:$key not exsit in dev.pl.\n";
+   ++$has_error;
+}}
+exit($has_error ? 1 : 0);
+</code></pre>
+
+</div>
+<div class="step" data-y="5600" data-x="2400">
+<h2>かなり普通な感じです</h2>
+
+</div>
+<div class="step" data-y="5600" data-x="3600">
+<h2>submodules</h2>
+
+<p>依存してる git repository の処理は以下の普通な感じです。</p>
+
+<pre><code>mkdir "submodules";
+!system 'git submodule add git://foo/bar.git submodules/bar' or die $?;
+chdir 'lib';
+!system 'ln -s ../submodules/bar/lib/Bar.pm Bar.pm' or die $?;
+chdir '..';
+</code></pre>
+
+</div>
+<div class="step" data-y="5600" data-x="4800">
+<h1>雛形作り直しに、反省ポイント</h1>
+
+</div>
+<div class="step" data-y="6400" data-x="0">
+<h2>何事も順調ではない</h2>
+
+</div>
+<div class="step" data-y="6400" data-x="1200">
+<h2>スマホアプリ、管理画面系、特種アーキテクチャ向け等の多様な用途により、雛形生成スクリプト本体をコピペして複数作ってしまった！</h2>
+
+</div>
+<div class="step" data-y="6400" data-x="2400">
+<h2>deploy script に便利機能追加したら、別のスクリプトにもコピペして反映するメンテ方法！</h2>
+
+</div>
+<div class="step" data-y="6400" data-x="3600">
+<h2>あれ？</h2>
+
+</div>
+<div class="step" data-y="6400" data-x="4800">
+<h2>＞　振り出しの予感！　＜</h2>
+
+</div>
+<div class="step" data-y="7200" data-x="0">
+<h2>他にも問題が</h2>
+
+<ul>
+<li>STF じゃ無くて GreenBusket 使いたいんだけど?</li>
+<li>国際化対応したいんだけど?</li>
+<li>スマホアプリと管理画面系の雛形混ぜたいんだけど?</li>
+<li>というか app.psgi だけじゃ、雛形足りなくね?</li>
+</ul>
+
+</div>
+<div class="step" data-y="7200" data-x="1200">
+<h2>雛形のメンテは通常業務の合間にちまちまやってたので、どれかのスクリプトをメンテしつつ必要な物のコピペメンテするのは大変になってきた</h2>
+
+</div>
+<div class="step" data-y="7200" data-x="2400">
+<h2>あと、テンプレートがスクリプトに内包されてるので、テンプレートの数が多くてメンテ辛いという事もあった</h2>
+
+</div>
+<div class="step" data-y="7200" data-x="3600">
+<h2>YAPC で、これのネタ発表するし新しく作っちゃえ！と思い立ったのが2週間前。出来たのが先週。</h2>
+
+</div>
+<div class="step" data-y="7200" data-x="4800">
+<h2>新しい雛形の要件</h2>
+
+<ul>
+<li>よりシンプルに</li>
+<li>複数の雛形を一元管理して、同じテンプレートは使い回し可能にする</li>
+<li>必要な追加機能を生成時に選択出来るようにする</li>
+<li>テンプレで埋め込む値(ドメイン名、ディレクトリ名など)は今まで、モジュール名から自動生成してたものをそのまま使えた試しがないので、より社内ルールに合わせて自働生成して、開発者が手動で変更出来るようにする</li>
+</ul>
+
+</div>
+<div class="step" data-y="8000" data-x="0">
+<h2>YAPC に向けた誓い</h2>
+
+<p>折角、開発の雛形生成のコツを発表するのに皆が持ち帰れるコードとか用意しないの馬鹿だよね、折角作り直すんだから外出し可能な物作らないとね?</p>
+
+</div>
+<div class="step" data-y="8000" data-x="1200">
+<h1>Ksgk</h1>
+
+</div>
+<div class="step" data-y="8000" data-x="2400">
+<h2>ksgk</h2>
+
+<p><img src="ksgk1.jpg" style="width:100%;" /></p>
+
+</div>
+<div class="step" data-y="8000" data-x="3600">
+<h2>ksgk</h2>
+
+<p><img src="ksgk2.jpg" style="width:100%;" /></p>
+
+</div>
+<div class="step" data-y="8000" data-x="4800">
+<h2>ksgk</h2>
+
+<p><img src="ksgk3.jpg" style="width:100%;" /></p>
+
+</div>
+<div class="step" data-y="8800" data-x="0">
+<h2>Ksgk - Knack of the System Generation for Kurouto</h2>
+
+<p>直訳「玄人の為のシステム生成のコツ」</p>
+
+</div>
+<div class="step" data-y="8800" data-x="1200">
+<h2>作りました</h2>
+
+<p>https://github.com/yappo/p5-Ksgk</p>
+
+<p>アプリケーションの雛形生成を支援する為の簡単ツール。</p>
+
+</div>
+<div class="step" data-y="8800" data-x="2400">
+<h2>特徴</h2>
+
+<ul>
+<li>雛形の role を複数定義可能</li>
+<li>role に対する機能拡張を定義可能</li>
+<li>雛形生成時に core, role, 機能拡張 それぞれに対応した値を複数入力可能</li>
+<li>上記値の default 生成、 validation を行う callback を実装可能</li>
+<li>雛形生成前の callback を実装する事で、テンプレートに渡す値を自動生成出来る</li>
+<li>雛形生成後の callback を実装して git init &amp;&amp; git add 等の後処理を実装可能</li>
+</ul>
+
+</div>
+<div class="step" data-y="8800" data-x="3600">
+<h2>アーキテクチャ</h2>
+
+<pre><code>setup.pl       = ユーザ実装の雛形スクリプト。設定が重要。
+assets/core    = 複数の雛形で使い回せるテンプレート
+assets/roles   = 雛形のテンプレート
+assets/options = 拡張機能のテンプレート
+</code></pre>
+
+</div>
+<div class="step" data-y="8800" data-x="4800">
+<h2>setup.pl</h2>
+
+<pre><code>use Ksgk;
+my $ksgk = Ksgk-&gt;new(
+ argv       =&gt; \@ARGV,
+ assets_dir =&gt; 'assets',
+ config     =&gt; +{ ...config...} ,
+);
+</code></pre>
+
+</div>
+<div class="step" data-y="9600" data-x="0">
+<h2>config, core/roles</h2>
+
+<pre><code>core_dir =&gt; 'core',
+roles    =&gt; [
+ name        =&gt; '雛形名',
+ description =&gt; '雛形説明',
+ options     =&gt; [ この雛形で利用可能な拡張機能 ],
+],
+</code></pre>
+
+</div>
+<div class="step" data-y="9600" data-x="1200">
+<h2>config, options</h2>
+
+<pre><code>options =&gt; [
+ 拡張機能名 =&gt; +{
+  description =&gt; '拡張機能の説明',
+ },
+],
+</code></pre>
+
+</div>
+<div class="step" data-y="9600" data-x="2400">
+<h2>config, hooks</h2>
+
+<pre><code>hooks =&gt; {
+ before =&gt; sub {
+  my $ksgk = shift;
+  雛形を生成する直前の hook },
+ after  =&gt; sub {
+  my $ksgk = shift;
+  雛形を生成した直後の hook },
+},
+</code></pre>
+
+</div>
+<div class="step" data-y="9600" data-x="3600">
+<h2>config, template_config の中身</h2>
+
+<pre><code>hooks.before = テンプレートの値処理の前段階の callback
+hooks.before = テンプレートの値処理の後
+</code></pre>
+
+</div>
+<div class="step" data-y="9600" data-x="4800">
+<h2>config, template_config の中身</h2>
+
+<pre><code>core[].name = 基本の設定 key (テンプレートで &lt;ks: $key :gk&gt; で呼ぶ)
+core[].description = 設定の説明
+core[].default = sub { my($conf, $ksgk) } デフォルト値を作って return する
+core[].validation = sub { my($value, $cinf, $ksgk) } 入力された $value の値チェックで、エラーだったら偽を返す
+</code></pre>
+
+</div>
+<div class="step" data-y="10400" data-x="0">
+<h2>config, template_config の中身</h2>
+
+<pre><code>roles.foo[].name = 雛形名'foo'の設定 key (テンプレートで &lt;ks: $key :gk&gt; で呼ぶ)
+</code></pre>
+
+<p>description, default, validation は core と同じ。拡張機能に関しても同じで roles を options に読み替える。</p>
+
+</div>
+<div class="step" data-y="10400" data-x="1200">
+<h2>柔軟な雛形ファイル配置</h2>
+
+<p>core, roles/:name, options/:name 以下のファイル構造をそのまま雛形として書き出してくれます。
+$ksgk->templrate_config の中の key を $key として filepath として書く事で、出力時のファイル名をアプリケーションに合わせて動的書き換え出来ます。</p>
+
+<pre><code># $ksgk-&gt;templrate_config-&gt;{module_path} = 'Foo/Bar' の時
+core/lib/$module_path.pm =&gt; lib/Foo/Bar.pm
+</code></pre>
+
+</div>
+<div class="step" data-y="10400" data-x="2400">
+<h2>設定したテンプレート値を使える</h2>
+
+<p>基本的に Xslate の Kolon 記法になっていて、 $ksgk->templrate_config の中身を tmpl_vars として使えます。</p>
+
+<pre><code>package &lt;ks: $module :gk&gt;;
+:ksgk: if (1) {
+</code></pre>
+
+<p>tag_start, tag_end, line_start は、通常使わないであろう文字列にしてある。</p>
+
+</div>
+<div class="step" data-y="10400" data-x="3600">
+<h2>機能拡張時に埋め込み可能なテンプレート記法</h2>
+
+<p>Ksgk のファイルの優先順位は core -> roles -> options という順序になっています。
+各ファイル階層に同名のファイルがあった場合、例えば core/README と roles/basic/README がある場合には、下位順位のファイルから読み込まれます。</p>
+
+</div>
+<div class="step" data-y="10400" data-x="4800">
+<h2>機能拡張時に埋め込み可能なテンプレート記法</h2>
+
+<p>下位のファイルからテンプレート読み込み処理されるのですが、下位ファイルの中に CONTENTS(key, value) という function がある時に key - values の組み合わせを記憶しておき、上位の core/README の中に INCLUDE(key) があった場合に、同名の key の CONTENTS の内容を展開します。</p>
+
+<p>複数拡張機能を利用していて同じファイルが複数あった場合には、読み込まれた順に出力されます。</p>
+
+</div>
+<div class="step" data-y="11200" data-x="0">
+<h2>core/lib/$module_path.pm の例</h2>
+
+<p><img src="core-module.png" /></p>
+
+</div>
+<div class="step" data-y="11200" data-x="1200">
+<h2>options/l10n/lib/$module_path.pm の例</h2>
+
+<p><img src="l10n-module.png" /></p>
+
+</div>
+<div class="step" data-y="11200" data-x="2400">
+<h2>出力結果</h2>
+
+<p><img src="hoo-module.png" /></p>
+
+</div>
+<div class="step" data-y="11200" data-x="3600">
+<h2>Ksgk にして良かった事</h2>
+
+<ul>
+<li>既存のプロジェクトで他言語処理が必要になった時に、Ksgk を使った雛形リポジトリの options/l10n を見せて必要最小限のコードスニペットを提示する事が出来た</li>
+<li>まだ使い始めて少しなのでこれから</li>
+</ul>
+
+</div>
+<div class="step" data-y="11200" data-x="4800">
+<h2>おそらく重要な事</h2>
+
+<p>特定の機能に関わる最小限のコードレシピが蓄積される事により、既存のレガシーなプロジェクトに対しても十分に参考になる環境になって行くのではないか?</p>
+
+</div>
+<div class="step" data-y="12000" data-x="0">
+<h2>開発のコツ</h2>
+
+<p>僕は、社内基盤を整備する仕事は本業ではなくて、サービスの開発をやらなきゃいけないので、こういったセットアップツールに使う時間は殆ど取れないです。
+だいたいは、新規のサービスを作るとき、そのサービスで新規に必要になる要件が後々他の人も使いそうだなというとき、でかつ実装開始まで数日猶予がある隙をねらってバレないように作ってます。</p>
+
+<p>ツールだけを作る人になってしまうと、多分本気に考えられないというか、実際に使い始めてみた時の不便さとかがわからないので、他の人に使ってもらえるような物にはならないんだとおもいます。</p>
+
+</div>
+<div class="step" data-y="12000" data-x="1200">
+<h1>その他の成果物など</h1>
+
+</div>
+<div class="step" data-y="12000" data-x="2400">
+<h2>インストーラ付き script</h2>
+
+<p>実行時に自動的に依存モジュールを入れて立ち上げたかったので以下のようなコードをスクリプト先頭に入れた。
+<img src="installer-script.png" /></p>
+
+</div>
+<div class="step" data-y="12000" data-x="3600">
+<h2>tiny log</h2>
+
+<p>Log::Minimal 等の既存のモジュールは、理由は忘れたけど使いづらかったので独自に log method を追加。fluentd を使える為の雛形を用意してあるので、 fluentd と住み別ける。
+ログの用途によって method を増やしていけば、これといって困った事にはならないしがっつりやりたいなら fluentd で。</p>
+
+</div>
+<div class="step" data-y="12000" data-x="4800">
+<h2>tiny log</h2>
+
+<p><img src="log.png" /></p>
+
+</div>
+<div class="step" data-y="12800" data-x="0">
+<h2>他言語対応</h2>
+
+<p>今どきのスマホ時代は、いつ全世界で流行るかわからないので Amon2 ユーザが他言語対応しやすい環境を調えたのが今年の僕です。</p>
+
+</div>
+<div class="step" data-y="12800" data-x="1200">
+<h2>Locale::Maketext::Extract::Plugin::Xslate</h2>
+
+<p>Locale::Maketext::Extract::Plugin::Xslate
+Xslate のパーサの結果を解析して template 中の function から翻訳対象となるテキストを抽出出来ます。以下のような l という function で翻訳結果を返す実装になっている template で使えます。</p>
+
+<pre><code>[% l('string') %]
+[% l('string %1', args[, ...]) %]
+[% IF l('string') = 'FOO' %]
+</code></pre>
+
+</div>
+<div class="step" data-y="12800" data-x="2400">
+<h2>Amon2::Plugin::L10N</h2>
+
+<p>Amon2 アプリの中で po/ja.po などのファイルを読み込んで翻訳結果を簡単にテンプレート出力する為のプラグインを書きました。</p>
+
+<pre><code># in Your.pm
+__PACKAGE__-&gt;load_plugins('L10N' =&gt; {
+ accept_langs =&gt; [qw/ en ja zh-tw zh-cn fr /],
+});
+</code></pre>
+
+</div>
+<div class="step" data-y="12800" data-x="3600">
+<h2>Amon2::Plugin::L10N</h2>
+
+<pre><code># in Your/Web/ViewFunctions.pm
+sub l {
+ my $string = shift;
+ my @args = map { Text::Xslate::html_escape($_) } @_; # escape arguments
+ Text::Xslate::mark_raw( Amazlet-&gt; context-&gt; loc($string, @args) );
+}
+</code></pre>
+
+</div>
+<div class="step" data-y="12800" data-x="4800">
+<h2>Amon2::Plugin::L10N</h2>
+
+<pre><code># in po/ja.po
+msgid "Hello"
+msgstr "こんにちわ"
+# in tmpl/index.tt
+[% l('Hello') %]
+</code></pre>
+
+<p>上のような簡単なサンプルコードで、日本語設定のブラウザでアクセスすると「こんにちわ」が表示されます。</p>
+
+</div>
+<div class="step" data-y="13600" data-x="0">
+<h2>HTTP::AcceptLanguage</h2>
+
+<p>Accept-Language head parser</p>
+
+<pre><code>my $lang = HTTP::AcceptLanguage-&gt;new(
+ $req-&gt;header('Accept-Language')
+)-&gt;match(qw/ en fr es ja zh-tw /);
+</code></pre>
+
+<p>RFC 信用するとお家帰れないので作った。</p>
+
+</div>
+<div class="step" data-y="13600" data-x="1200">
+<h2>L10N tips</h2>
+
+<p>僕はテンプレートの中のテキストを l('Hello') のように英語で書くのが好みなのですが、一つの英語表記でも使う場所や言語によっては違う意味になるケースがでてきます。
+そういった場合には翻訳すべきテキストに key や id などを割り当てて管理して l('config.helo') のような key をテンプレートに書いてく事になるのですが、長文の英語だと key が表す文章が理解不能になるケースがあって困るので l('Hello###config.helo###') のように msgid と msgstr を同時に記述する雛形を作っている。</p>
+
+</div>
+<div class="step" data-y="13600" data-x="2400">
+<h2>L10N tips</h2>
+
+<pre><code># in en_translate.txt
+config.helo=Hello
+# in po/en.po
+msgid="Hello"
+msgstr="Hello"
+msgid="Hello###config.helo###"
+msgstr="Hello"
+</code></pre>
+
+<p>以上のようなルールで .po ファイルを自働生成している。</p>
+
+</div>
+<div class="step" data-y="13600" data-x="3600">
+<h2>Exceptions</h2>
+
+<p>Perl は基本的に例外処理という概念は無いに等しいのですが、 model の処理で validation error とか、その他の error とかを戻り値ベースで対応してコード書くと reterun code とか考えるのだるくなるので例外ベースで model の error を処理しがちです</p>
+
+</div>
+<div class="step" data-y="13600" data-x="4800">
+<h2>Exception::Tiny</h2>
+
+<pre><code>package MyE;
+use parent 'Exception::Tiny';
+eval { MyE-&gt;throw }
+$@ &amp;&amp; MyE-&gt;caught($@) &amp;&amp; do { ... }
+</code></pre>
+
+</div>
+<div class="step" data-y="14400" data-x="0">
+<h2>Exception::Tiny source code simple than Exception::Class</h2>
+
+<p>Exception class の為の最低限の実装しか書いてなくて、拡張は perl らしく CPAN つかう。</p>
+
+</div>
+<div class="step" data-y="14400" data-x="1200">
+<h2>Try::Lite</h2>
+
+<p>Kantan exception Catch</p>
+
+<pre><code>try {
+ MyE-&gt;throw;
+} (
+ 'MyE' =&gt; sub {
+   say $@;
+ }
+);
+</code></pre>
+
+</div>
+<div class="step" data-y="14400" data-x="2400">
+<h2>Exceptions 課題</h2>
+
+<p>やっpり model の error を exception にするの微妙</p>
+
+</div>
+<div class="step" data-y="14400" data-x="3600">
+<h1>継続的開発、運用的視点</h1>
+
+</div>
+<div class="step" data-y="14400" data-x="4800">
+<h2>CI</h2>
+
+<p>git clone, pull, submodule update などの処理してから carton install, perl Makefile.PL して prove -r t > /tmp/result.txt するコマンド叩いたあとに、 result.txt の内容を ukigumo web api に post するスクリプトを cron で回してる</p>
+
+</div>
+<div class="step" data-y="15200" data-x="0">
+<h2>Makefile.PL</h2>
+
+<pre><code># 素の make test つかうと blib/ にコピーされたりしてうざいので prove 直接たたいてやります
+sub MY::test_via_harness {
+  "\tprove -rl t"
+}
+</code></pre>
+
+<p>これで make test すると prove -rl t してくれる</p>
+
+</div>
+<div class="step" data-y="15200" data-x="1200">
+<h2>.proverc</h2>
+
+<pre><code>:ksgk: if (!$no_carton) {
+"--exec=carton exec -- perl -Ilib -I."
+:ksgk: }
+-Pretty
+--color
+-v
+</code></pre>
+
+</div>
+<div class="step" data-y="15200" data-x="2400">
+<h2>growthhack</h2>
+
+<p>GrowthForecast と HRForecast と shib と fluentd とか組み合わせればおっけ。</p>
+
+<p>grouthforecast-worker.pl を同梱してる。</p>
+
+<p>keyword: kazeburo tagomoris</p>
+
+</div>
+<div class="step" data-y="15200" data-x="3600">
+<h2>SQL</h2>
+
+<p>use explain, use index</p>
+
+<ul>
+<li>SQL 吐くときはかならず explain 通してからクエリちゃんとなってるか見る</li>
+<li>index が使われるクエリを出すこと</li>
+</ul>
+
+<p>for ループの回し方でクエリ数が増えて椅子とぶとかあるけど、上記二点が絶対条件。</p>
+
+</div>
+<div class="step" data-y="15200" data-x="4800">
+<h2>QueryLog</h2>
+
+<pre><code>if (&lt;ks: $module :gk&gt;-&gt;is_development) {
+ enable sub { my $app = shift; sub {
+  my $env = shift;
+  if ($env-&gt;{QUERY_STRING} =~ /querylog=1/) {
+   $env-&gt;{'xdbix.querylog'} = DBIx::QueryLog-&gt;guard;
+  }
+  $app-&gt;($env);
+ }};
+}
+</code></pre>
+
+</div>
+<div class="step" data-y="16000" data-x="0">
+<h2>AXS log</h2>
+
+<pre><code>my $logdir = $vardir-&gt;child('log');
+$logdir-&gt;mkpath; chmod 0777, $logdir;
+$logger  = File::RotateLogs-&gt;new(
+ logfile  =&gt; $logdir-&gt;child('access_log.%Y%m%d%H%M'),
+ linkname =&gt; $logdir-&gt;child('access_log')
+);
+enable 'AxsLog',
+ combined =&gt; 1,
+ response_time =&gt; 1,
+ logger   =&gt; sub { $logger-&gt;print(@_) };
+</code></pre>
+
+</div>
+<div class="step" data-y="16000" data-x="1200">
+<h2>DB replcation</h2>
+
+<ul>
+<li>昔の会社では slave lvs 使ってた事あった</li>
+<li>入社した時に lvs 使ってない事について質問したら、教えてくれたし実際に運用している人達に全て任せるべきなので今は lvs してない</li>
+<li>sfujiwara さんの 1:3 master:slave</li>
+<li>スタートアップサービスの90%は1master:1slaveでよくてslaveはオンラインバックアップ用途</li>
+<li>万が一の障害の時があるので MHA + PDNS</li>
+</ul>
+
+</div>
+<div class="step" data-y="16000" data-x="2400">
+<h2>デプロイ</h2>
+
+<ul>
+<li>shell script</li>
+<li>deploy.sh = opts 解析したりそれに合わせて動かす処理変える</li>
+<li>deploy-function.sh rsync や ssh コマンドで実際の処理本体の function</li>
+<li>deploy-config.sh バラまくホストやファイルなどの設定</li>
+<li>deploy 前に config の妥当性チェック</li>
+</ul>
+
+</div>
+<div class="step" data-y="16000" data-x="3600">
+<h2>daemon 配置</h2>
+
+<ul>
+<li>リポジトリには run file だけ配置</li>
+<li>mkdir /tmp/<em>foo</em>daemons</li>
+<li>cd /tmp/_foo-daemon; ln -s /fo/bar/run</li>
+<li>mkdir log; cd log ; ln -s /fo/bar/log/run</li>
+<li>mv /tmp/_foo-daemon /service/foo-daemon</li>
+</ul>
+
+</div>
+<div class="step" data-y="16000" data-x="4800">
+<h2>デプロイ注意</h2>
+
+<p>rsync で template をバラまく時に、アプリケーションのコードが restart される前にテンプレートが利用されるので、アプリケーション側の仕様とテンプレート側を同時に反映するとエラーになる。DB Schema とアプリケーションでも同様。</p>
+
+</div>
+<div class="step" data-y="16800" data-x="0">
+<h2>deploy script でスケールを考慮する</h2>
+
+<p>いつなんどきサービスが流行るかもわからないので、いつでもスケールするDB設計やアプリケーション設計をするのは当然ですが、みんな忘れがちな物として新しいサーバが増設されたらどれだけ早く本番投入出来るか！？</p>
+
+</div>
+<div class="step" data-y="16800" data-x="1200">
+<h2>スケールする deploy tips</h2>
+
+<ul>
+<li>mkdir, chmod</li>
+<li>設定の自動化</li>
+<li>特殊な実行バイナリも同時に配布</li>
+</ul>
+
+<p>アプリケーションバラまいたら直ちに正しく動作する順部を deploy script で行う</p>
+
+</div>
+<div class="step" data-y="16800" data-x="2400">
+<h2>さいごに</h2>
+
+<p><img src="l.png" /></p>
+
+</div>
+<div class="step" data-y="16800" data-x="3600">
+<h2>「最近出した本」「最近の活動」「最近の夜のお供」などに最適です！</h2>
+
+<p><img src="mt.png" /></p>
+
+</div>
+<div class="step" data-y="16800" data-x="4800">
+<h1>以上です</h1>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
