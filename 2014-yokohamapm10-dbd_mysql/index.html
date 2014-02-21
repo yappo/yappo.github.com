@@ -1,0 +1,279 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div id="title" data-y="0" class="step" data-x="0">
+<h1>ひとつ上の DBD::mysql casual</h1>
+
+<p><address>Yappo @ Yokohama.PM #10</address>
+<style>
+.step h1 {
+    font-size: 60px;
+    line-height: 1.2em;
+    padding-bottom: 15px;
+}.step h2 {
+    font-size: 50px;
+    line-height: 1.1em;
+    padding-bottom: 15px;
+}.step h3 {
+    font-size: 40px;
+    line-height: 1.1em;
+    padding-bottom: 10px;
+}.step code {
+    font-family: monospace;
+    font-size: 0.5em;
+    line-height: 0;
+}.step {
+    line-height: 0.9;
+}
+</style></p>
+
+</div>
+<div data-y="0" class="step" data-x="1200">
+<h2>あらすじ</h2>
+
+<p>ここ最近 DBD::mysql 使ってパフォーマンスアップ頑張ってたので得られたちょびっとだけの知見を外出します</p>
+
+</div>
+<div data-y="0" class="step" data-x="2400">
+<h2>bit result との戦い</h2>
+
+<p>通常は</p>
+
+<pre><code>my $sth = $dbh-&gt;prepare(
+  'SELECT * FROM okkiinari'
+);
+$sth-&gt;execute;
+</code></pre>
+
+<p>とかしてクエリなげるんですが、 execute 発行した段階でサーバからデータを全て読み込んでしまう。
+IOブロック長いしメモリ食いまくる。</p>
+
+</div>
+<div data-y="0" class="step" data-x="3600">
+<h2>普通の実装</h2>
+
+<p>普通の人はこういう事する。</p>
+
+<pre><code>my $last_id = 0;
+while (1) {
+  my $sth = $dbh-&gt;prepare(
+    'SELECT * FROM okkiinari WHERE &gt; ? LIMIT 100'
+  );
+  $sth-&gt;execute($last_id);
+  while (my $row - $sth-&gt;fetchrow_hashref) {}
+  last if $sth-&gt;rows &lt; 100;
+}
+</code></pre>
+
+</div>
+<div class="step" data-x="4800" data-y="0">
+<h1>それ mysql_use_result でやってみよう</h1>
+
+</div>
+<div class="step" data-x="6000" data-y="0">
+<h2>mysql_use_result とは</h2>
+
+<p>libmysqlclient の C API である。通常 execute を発行すると mysql_store_result という C API を利用してサーバから結果を全部転送してくる。</p>
+
+<p>しかしこのオプションを指定すると execute 発行してから mysqld が結果を返してきたタイミングで execute メソッドが帰ってくる。そして実際のデータ転送は fetch が実行された時になる。</p>
+
+<p>以下のいずれかの指定をすると、これが有効になる。</p>
+
+<pre><code>my $dbh= DBI-&gt;connect('DBI:mysql:test;mysql_use_result=1', 'root', '');
+$dbh-&gt;{mysql_use_result}=1; 
+$sth-&gt;{mysql_use_result} = 1;
+$sth-&gt;prepare($sql, { mysql_use_result =&gt; 1 });
+</code></pre>
+
+</div>
+<div data-x="7200" class="step" data-y="0">
+<h2>mysql_use_result 注意1</h2>
+
+<pre><code> $sth-&gt;rows;
+</code></pre>
+
+<p>して結果行を得ようとしても0が戻ります。</p>
+
+</div>
+<div class="step" data-x="0" data-y="800">
+<h2>mysql_use_result 注意2</h2>
+
+<p>全レコードを取得するまで若しくは $sth->finish するまでは READ LOCK がかかってる状態っぽい事が mysql の C API ドキュメントに書いてあったんですが、再現しませんでした。</p>
+
+</div>
+<div data-y="800" data-x="1200" class="step">
+<h2>mysql_use_result 注意3</h2>
+
+<p>このオプションさえ使えばあとは何も気にしなくて良いのですが id:sh2 さんから「mysql_use_resultしてもサーバの挙動自体は変わらなくて、クライアントへのネットワークが細くて通信を待たされているような状態です。クライアントがもたもたしているとNET_READ_TIMEOUT(デフォルト30秒)で切断されるので注意」とアドバイスを貰いました。</p>
+
+</div>
+<div class="step" data-x="2400" data-y="800">
+<h2>でも</h2>
+
+<p>検証コードで以下の感じでやってみたけど普通に fetch できて良くわからない！</p>
+
+<pre><code>my $sth = $dbh-&gt;prepare('SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5', { mysql_use_result =&gt; 1 });
+$sth-&gt;execute;
+sleep 65;
+while (my $row = $sth-&gt;fetchrow_arrayref) {
+  sleep 65;
+  printf "%d: %s\n", time(), $row-&gt;[0];
+}
+</code></pre>
+
+</div>
+<div data-x="3600" class="step" data-y="800">
+<h2>mysql_use_result 注意4</h2>
+
+<p>次に紹介する機能と併用できません。
+コード見た感じ併用するパッチ書いたら出来そうなんだよね。使わないからパッチ書かないけど。</p>
+
+</div>
+<div data-x="4800" class="step" data-y="800">
+<h2>重いクエリを実行中の後ろで別の処理を行いたい！</h2>
+
+<p>バッチ処理とか管理画面を実装する時に、集計スクリプト等でわりと重いクエリを発行する事があると思います(もちろんバッチ用のスレーブで)。
+さらに別の重たい処理をしたいなんて事があるんじゃないでしょうか。複数の重いクエリでも良いけど。</p>
+
+</div>
+<div class="step" data-x="6000" data-y="800">
+<h2>それ async API で</h2>
+
+<p>最近の DBD::mysql では　async オプションが追加されています。
+このオプションを使うと execute して mysqld にクエリを投げたあとは結果を待たずに戻ってきます。 mysql_use_result は <em>結果が出来るのを待ってから、データ転送はしない</em> という微妙な差異があります。</p>
+
+</div>
+<div data-y="800" class="step" data-x="7200">
+<h2>使い方</h2>
+
+<p>AnyEvent で使ってもいいですが、わりとパフォーマンス悪いので IO::Select とか使うといいです。 execute した後に fetch するタイミングがわからなくなりそうですが、 mysqld_fd っていうメソッドが socket の fd を返してくれるのでそれを使います。</p>
+
+</div>
+<div data-x="0" class="step" data-y="1600">
+<h2>code</h2>
+
+<pre><code>my $sth1 = $dbh1-&gt;prepare('SELECT 1', { async =&gt; 1 });
+my $sth2 = $dbh2-&gt;prepare('SELECT 1', { async =&gt; 1 });
+$sth1-&gt;execute; $sth2-&gt;execute;
+my $select = IO::Select-&gt;new(
+  $dbh1-&gt;mysql_fd, $dbh2-&gt;mysql_fd,
+);
+while ($select-&gt;count) {
+  my @fd = $select-&gt;can_read;
+  $select-&gt;remove(@fd);
+}
+while (my $row = $sth1-&gt;fetchrow_arrayref) {}
+while (my $row = $sth2-&gt;fetchrow_arrayref) {}
+</code></pre>
+
+</div>
+<div data-y="1600" class="step" data-x="1200">
+<h2>notice1</h2>
+
+<ul>
+<li>DBD::mysql 独自の実装</li>
+<li>server side prepared statement は使えない</li>
+<li>最初に fetch したタイミングでサーバからデータを全部読み込む( mysql_use_result を使ってない併用できない)</li>
+<li>readable になるのを待たずに fetch したら block してデータを全部読み込む</li>
+</ul>
+
+</div>
+<div data-x="2400" class="step" data-y="1600">
+<h2>notice2</h2>
+
+<ul>
+<li>一度も fetch しなかったり $sth->finish しない状態では commit rollback できなくて、新規クエリも投げられない</li>
+<li>mysql_async_ready もあるけど内部的に timeout 指定出来ない  poll(&amp;fds, 1, 0) 呼んで速戻るだけなので使っても busy loop になるだけ</li>
+<li>mysql_async_result というメソッドも提供されているけど、結果の行数返すだけだしそもそも fetch 呼んだ時に内部的に呼ばれるので使う意味ない</li>
+</ul>
+
+</div>
+<div data-x="3600" class="step" data-y="1600">
+<h2>大事なこと</h2>
+
+<p>サーバからのデータの転送は非同期じゃないんです。あくまでもクエリの処理が終わるまでの間の時間しか待てないから使いどころ少ない！</p>
+
+</div>
+<div data-x="4800" class="step" data-y="1600">
+<h1>それでもデータの転送を非同期にしたい！</h1>
+
+</div>
+<div data-y="1600" class="step" data-x="6000">
+<h2>実は既存のユースケースでも何となく出来ます</h2>
+
+<pre><code>my $sth = $dbh-&gt;prepare($sql, { mysql_use_result =&gt; 1 }); $sth--&gt;execute;
+while (1) {
+  while (1) {
+    my $ret = IO::Select--&gt;new($dbh--&gt;mysql_fd)--&gt;can_read(0);
+    last if $ret;
+      ...; # read 出来るまでの間にやっときたいこと
+  }
+  my $row = $sth--&gt;fetchrow_hashref;
+  last unless $row;
+  ...; # 通常の行処理
+}
+</code></pre>
+
+</div>
+<div class="step" data-x="7200" data-y="1600">
+<h2>どういう事かっていうと</h2>
+
+<p>libmysqlclient の内部的に fetch_row を呼んだ時に、サーバからデータを受け取るのに cli_safe_read を使っていて受け取ったパケット(mysql的な意味で)が MAX_PACKET_LENGTH と一致するまで延々と block して read するんですが、たまに MAX_PACKET_LENGTH 未満のデータを受け取った時に fetch_row まで落ちてきて fetchrow_hashref とかが帰ってくるので、そのタイミングで readable になってなければ script でなんか処理してしまおうって作戦。</p>
+
+<p>mysql_use_result の時だけ使える売るテク。基本的に稀です。</p>
+
+</div>
+<div data-x="0" class="step" data-y="2400">
+<h2>簡単な原理でした</h2>
+
+<p>ここまで前座次が本編</p>
+
+</div>
+<div data-y="2400" class="step" data-x="1200">
+<h1>Localizer</h1>
+
+<p><address>Yappo @ Yokohama.PM #10</address></p>
+
+</div>
+<div class="step" data-x="2400" data-y="2400">
+<h2>時間切れです</h2>
+
+<p>tokuhirom が今作ってる他言語処理モジュール。有名なあれはコードが読みづらくていざ困った時に辛いからわかりやすいコードで実装されてて使いやすいよ！</p>
+
+</div>
+<div class="step" data-x="3600" data-y="2400">
+<h1>以上です</h1>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
