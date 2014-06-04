@@ -1,0 +1,532 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div data-y="0" id="title" data-x="0" class="step">
+<h1>センスの良い<br>どうぐ使いを目指して</h1>
+
+<p><address>やっぽ～(どうLv71/スキル100) <br>@ LINE Developer Meetup in Fukuoka #4</address>
+<style>
+.step h1 {
+    font-size: 60px;
+    line-height: 1.2em;
+    padding-bottom: 15px;
+}.step h2 {
+    font-size: 50px;
+    line-height: 1.1em;
+    padding-bottom: 15px;
+}.step h3 {
+    font-size: 40px;
+    line-height: 1.1em;
+    padding-bottom: 10px;
+}.step code {
+    font-family: monospace;
+    font-size: 0.5em;
+    line-height: 0;
+}.step {
+    line-height: 0.95;
+}
+</style></p>
+
+</div>
+<div class="step" data-x="1200" data-y="0">
+<h1><b style="color:red">この発表は個人の見識であり、所属する組織やこの勉強会の公式見解とは一切違います</b></h1>
+
+</div>
+<div class="step" data-x="2400" data-y="0">
+<h2>本日の概要</h2>
+
+<p>日々新しいソフトウェア技術が開発され続けている現在の中において、僕が考えた最強のどうぐ選びの基準を話してみようと思います。</p>
+
+</div>
+<div data-y="0" class="step" data-x="3600">
+<h2>agenda</h2>
+
+<ul>
+<li>自己紹介</li>
+<li>Web系エンジニアにとってのどうぐとは</li>
+<li>今まで採用して良かったどうぐ、ダメだったどうぐ</li>
+<li>まとめ</li>
+</ul>
+
+</div>
+<div data-y="0" data-x="4800" class="step">
+<h1><b>自己紹介</b></h1>
+
+<ul>
+<li>基本的には Perl で server side application を書いてます</li>
+<li>あ、役職ない普通の社員です、意思決定権とか何も無いです</li>
+</ul>
+
+<p><br>
+See Also:</p>
+
+<p>http://yappo.github.io/ の 20111014-yapcasia2011-ikachan 以降の話題とか</p>
+
+</div>
+<div class="step" data-x="0" data-y="800">
+<h2>会場のみなさんに質問です</h2>
+
+</div>
+<div data-y="800" class="step" data-x="1200">
+<h2>Web 制作に関わっている方?</h2>
+
+</div>
+<div data-y="800" class="step" data-x="2400">
+<h2>実際にコードを書いている方?</h2>
+
+</div>
+<div data-x="3600" class="step" data-y="800">
+<h2>主に Perl で書かれている方?</h2>
+
+</div>
+<div data-y="800" data-x="4800" class="step">
+<h2>ありがとうございました</h2>
+
+</div>
+<div data-y="1600" class="step" data-x="0">
+<h2>では質問の結果をふまえて、あまり Perl の話に拘らない感じでいきます</h2>
+
+</div>
+<div data-y="1600" class="step" data-x="1200">
+<h1><b>本題に入る前に</b></h1>
+
+<p>僕が考えるエンジニアの働き方や、ある程度の規模感のサービスのありがちな話をします。</p>
+
+<p><br>
+<b style="color:red">特定の会社やサービスは関係無いです。</b></p>
+
+</div>
+<div class="step" data-x="2400" data-y="1600">
+<h2>エンジニアが組織で働く理由</h2>
+
+<ul>
+<li>お金?</li>
+<li>福利厚生?</li>
+<li>名誉欲?</li>
+</ul>
+
+</div>
+<div class="step" data-x="3600" data-y="1600">
+<h2>それエンジニアじゃなくても満たせるよ?</h2>
+
+</div>
+<div data-y="1600" class="step" data-x="4800">
+<h2>じゃぁ何?</h2>
+
+<p>よくわかんない</p>
+
+</div>
+<div class="step" data-x="0" data-y="2400">
+<h2>たぶん</h2>
+
+<p>自分の力で困ってる人が救えるというヒーロー欲みたいのがあるんだと思う。
+<br><br>
+その目的を達成するのに高効率なのが Web サービスのエンジニアってだけ。
+<br><br>
+名誉欲にも見えるけど、道ばたで財布無くしておろおろしてるチャラ男に1000円渡して助けてあげる程度の影響度。</p>
+
+</div>
+<div class="step" data-x="1200" data-y="2400">
+<h2>どんな人を助けるか</h2>
+
+<ul>
+<li>仕事と職種が関係のないけど同じ会社の人</li>
+<li>サービスを使ってくれるであろう見知らぬ人</li>
+<li>同じサービスを作っている仲間</li>
+<li>同じ会社の同じエンジニアの仲間</li>
+<li>会社とは関係ない同じエンジニアの仲間</li>
+</ul>
+
+</div>
+<div data-y="2400" class="step" data-x="2400">
+<h2>どのような手助けができるかをたまに意識する</h2>
+
+</div>
+<div data-x="3600" class="step" data-y="2400">
+<h2>物事を見る視点を増やそう</h2>
+
+</div>
+<div data-x="4800" class="step" data-y="2400">
+<h2>広範囲に視点を持つ</h2>
+
+<ul>
+<li>自分の作り方が世間とズレてないか</li>
+<li>周りに、変な事してる人がいないか</li>
+<li>ちょっとした事で困ってる人がいないか</li>
+<li>自分の仕事範囲+ちょっとだけでも良い</li>
+<li>本当に全部見るのは偉い人に押し付けとけば良い</li>
+<li>少しは自分がやってるサービスの評価とか見ようぜ</li>
+</ul>
+
+</div>
+<div data-y="3200" data-x="0" class="step">
+<h2>将来を見る力を養う</h2>
+
+<ul>
+<li>オープンな仕様の動向</li>
+<li>仕事で使ってるソフトウェアの情勢</li>
+<li>担当サービスの予定、同僚の仕事の予定</li>
+<li>本当の会社の先の事は偉い人にでも考えさせとけば良い</li>
+<li>ちな「3カ月先の計画なんて無意味」って言ってる会社もあるらしい</li>
+</ul>
+
+</div>
+<div data-y="3200" class="step" data-x="1200">
+<h2>整合性を求める</h2>
+
+<ul>
+<li>自分の担当分野だけでなく、会社全体の整合性</li>
+<li>今現在だけではなく、将来を見据えた整合性</li>
+<li>自分の中だけで整合性もとってもだめ周りと相談して決めよう</li>
+<li>もちろん企画やマネージャなど、様々な人と協力しないと整合性は取れない</li>
+<li>仕様の食い違いが起きるのって、99%くらい整合性とるのさぼってるから</li>
+<li>ああ、全体の整合性見るのも偉い人の仕事でしたね＾＾</li>
+</ul>
+
+</div>
+<div data-x="2400" class="step" data-y="3200">
+<h2>エンジニアに重要な3つの視点</h2>
+
+<ul>
+<li>広い視野</li>
+<li>将来を視る</li>
+<li>整合性を視定める</li>
+</ul>
+
+</div>
+<div class="step" data-x="3600" data-y="3200">
+<h2>おんぶにだっこだめ</h2>
+
+<p>エンジニアの使命は、世界中の人が喜ぶ製品を作り出す事。その指名を果たすには使える手段全てを使うのがエンジニア本来の仕事。</p>
+
+</div>
+<div class="step" data-x="4800" data-y="3200">
+<h2>とにかく考える</h2>
+
+<p>「一人でずっと考えて、他のプロジェクトと連携も考えないで、とにかく良い物を本気になって考える」って良い事いってる人もいました。</p>
+
+</div>
+<div data-y="4000" data-x="0" class="step">
+<h2>質問おじさんになる</h2>
+
+<ul>
+<li>考えるより聞いた方が早い</li>
+<li>なぜ自分の価値観と違う事をしているのか? を相手に聞かずに自分だけで消化しない</li>
+<li>自分の周りはみんな優秀で賢い</li>
+<li>専門家が5秒で答えられる事は結構多い</li>
+<li>結果的に正しい事がわかり整合性が取れる</li>
+</ul>
+
+</div>
+<div data-x="1200" class="step" data-y="4000">
+<h2>人に丸投げする</h2>
+
+<ul>
+<li>特定の処理を専門に行ってる人が居たら全てを任せた方がいい</li>
+<li>ノウハウの蓄積は最初は集約すべき</li>
+<li>自分の周りはみんな優秀で賢い</li>
+<li>そして DRY になる</li>
+</ul>
+
+</div>
+<div data-y="4000" data-x="2400" class="step">
+<h2>人から仕事を投げられる</h2>
+
+<ul>
+<li>案件以外の人からお願いされる時は大体相手が本当に困ってる</li>
+<li>自分の専門の領域や、ノウハウを溜めている案件だったら積極的に手伝おう</li>
+<li>自分も周りよりは優秀で賢い</li>
+<li>そして DRY になる</li>
+</ul>
+
+</div>
+<div data-y="4000" class="step" data-x="3600">
+<h2>エンジニアに重要な3つのアクション</h2>
+
+<ul>
+<li>質問力</li>
+<li>委任力</li>
+<li>巻き取り力</li>
+</ul>
+
+<p><br>
+巻き込み力とも言う?</p>
+
+</div>
+<div data-y="4000" data-x="4800" class="step">
+<h2><span style="color:red;">これらのアクションは、人の労力を増やすので空気感を読み取る事と相手との信頼関係の構築が最も重要である</span></h2>
+
+</div>
+<div data-x="0" class="step" data-y="4800">
+<h2>エンジニアを取り巻く環境</h2>
+
+<ul>
+<li>ヘッドハンティング</li>
+<li>解雇</li>
+<li>会社合併</li>
+<li>担当サービスの変更</li>
+<li>担当サービスの影響力が高くなる</li>
+</ul>
+
+<p><br>
+「変化に強くなれ」って誰かも言ってました</p>
+
+</div>
+<div class="step" data-x="1200" data-y="4800">
+<h2>変化に耐えるエンジニアとは</h2>
+
+<ul>
+<li>臆病</li>
+<li>コミュニケーション</li>
+<li>汎用化</li>
+<li>応用力</li>
+</ul>
+
+<p><br>
+<br>
+(各項目の詳細ないから、ここで説明して)</p>
+
+</div>
+<div data-x="2400" class="step" data-y="4800">
+<h2>僕の好きなマインドの話からしようと思ったら、こんな感じになった</h2>
+
+<ul>
+<li>視点</li>
+<li>行動</li>
+<li>耐性</li>
+</ul>
+
+<p><br>
+1<span style="color:blue;"> 2 3 4 5 6 7 8 9 10 次へ ＞ 最後へ ＞＞</span></p>
+
+</div>
+<div class="step" data-x="3600" data-y="4800">
+<h2>現場レベルでエンジニアが考える事</h2>
+
+<ul>
+<li>自分が使いやすいか</li>
+<li>自分が居なくても運用可能か</li>
+<li>安定して運用ができるか</li>
+<li>障害からの復旧フローは正しく設定できるか</li>
+<li>継続的なメンテナンスが可能か</li>
+</ul>
+
+</div>
+<div data-y="4800" data-x="4800" class="step">
+<h2>逸脱をすると、全て自分で面倒をみなければならない、若しくは面倒を見なくても問題無いようなシステムを作り上げなければならない</h2>
+
+</div>
+<div data-y="5600" data-x="0" class="step">
+<h2>適材適所を間違えない</h2>
+
+<ul>
+<li>新しいどうぐを手に入れたら、なんでもそれで解決しちゃう?</li>
+<li>長く使っているどうぐがいつまでも安全で確実だと思ってる?</li>
+<li>xxx 使ってるやつはクソ、 ooo 使わないとか信じられないと思う?</li>
+<li>ブランドに流されるやーつw</li>
+</ul>
+
+</div>
+<div data-x="1200" class="step" data-y="5600">
+<h2>人が採用している方法を使う</h2>
+
+<ul>
+<li>結局実績があるやりかたになる</li>
+<li>チーム全体で整合性が取れる</li>
+<li>自分の周りはみんな優秀で賢い</li>
+<li>他人の学習コスト下げられる(重要)</li>
+<li>メンテナンス担当の替えが効きやすい</li>
+</ul>
+
+</div>
+<div data-y="5600" data-x="2400" class="step">
+<h2>え?「ずっと僕はこのサービス担当する」って?</h2>
+
+</div>
+<div class="step" data-x="3600" data-y="5600">
+<h2>自分は他人、先週の自分は無理難題な企画以上の敵である。来週の自分がメンテナンス出来る事を考えて常に生きよう</h2>
+
+</div>
+<div data-y="5600" data-x="4800" class="step">
+<h2>世の中はあなたのサービスを放置し続ける保証は無い</h2>
+
+<ul>
+<li>人員増員</li>
+<li>世界中で流行ったら多国籍化</li>
+<li>スケール戦略の為のコンポーネント分割</li>
+<li>コンポーネントごとの専任チーム</li>
+<li>コンポーネント間の連携</li>
+</ul>
+
+</div>
+<div data-x="0" class="step" data-y="6400">
+<h2>人員増員</h2>
+
+<ul>
+<li>middleware／ライブラリ の選定</li>
+<li>コードのクオリティ</li>
+<li>DB Schema のクオリティ</li>
+<li>パフォーマンス</li>
+<li>メトリクス</li>
+</ul>
+
+</div>
+<div class="step" data-x="1200" data-y="6400">
+<h2>多国籍化</h2>
+
+<ul>
+<li>ドキュメント</li>
+<li>管理ツール</li>
+<li>数値の単位</li>
+<li>商習慣</li>
+</ul>
+
+</div>
+<div data-y="6400" data-x="2400" class="step">
+<h2>コンポーネントが分離される</h2>
+
+<ul>
+<li>コンポーネント間通信</li>
+<li>多数のコンポーネントと連携する</li>
+<li>1つのコンポーネントの乱れはサービス停止</li>
+<li>担当同士のコミュニケーション</li>
+</ul>
+
+</div>
+<div data-y="6400" class="step" data-x="3600">
+<h2>小さいコンポーネントだからこそパフォーマンスに命かける</h2>
+
+<ul>
+<li>バーストトラフィックに対応するにも限界値のベンチマークは必要</li>
+<li>基本はサーバを増やしたら対応出来るように</li>
+<li>簡単に増やせるようにする</li>
+<li>今の方法がダメだった時の10手先まで考えておく</li>
+</ul>
+
+</div>
+<div data-y="6400" class="step" data-x="4800">
+<h2>だんだんエンジニアらしい話になってきたので、この辺でいったんまとめます</h2>
+
+</div>
+<div data-y="7200" data-x="0" class="step">
+<h2>まとめ</h2>
+
+<p>ちゃんと考えよう</p>
+
+</div>
+<div data-x="1200" class="step" data-y="7200">
+<h1><b>Web系エンジニアにとってのどうぐとは</b></h1>
+
+</div>
+<div data-y="7200" class="step" data-x="2400">
+<h2>さて、そろそろお気づきだとおもいます</h2>
+
+</div>
+<div data-x="3600" class="step" data-y="7200">
+<h2>我々エンジニアにとってのどうぐとは?</h2>
+
+</div>
+<div data-x="4800" class="step" data-y="7200">
+<h2>さっきのまとめ</h2>
+
+</div>
+<div data-y="8000" class="step" data-x="0">
+<h2>まとめ</h2>
+
+<p>ちゃんと考えよう</p>
+
+</div>
+<div data-y="8000" class="step" data-x="1200">
+<h2>そうです</h2>
+
+</div>
+<div data-x="2400" class="step" data-y="8000">
+<h2>考える頭脳こそがエンジニアの唯一無二の道具なんです。エディタ何使うとかプログラム言語どうするとかマジどうでも良い話なんです。そこ本質じゃないんです。</h2>
+
+</div>
+<div class="step" data-x="3600" data-y="8000">
+<h2>そして、どうぐを一番研ぎすませてくれるのは、やっぱり同じ考える事が出来る良識あるエンジニアだけなんですね</h2>
+
+</div>
+<div data-y="8000" data-x="4800" class="step">
+<h2>ほんと、資料の前座部分かいてて発見しました！本当は、前座の後に色々実際のソフトウェアの選定基準はなそうと思ってたけど、纏まった感すごいです！ぼくさとりました！なんだか賢者になったきがしました！</h2>
+
+</div>
+<div data-y="8800" class="step" data-x="0">
+<h1>今まで採用して良かったどうぐ、ダメだったどうぐ</h1>
+
+<p><address>やっぽ～(賢者Lv79/スキル130) <br>@ LINE Developer Meetup in Fukuoka #4</address></p>
+
+</div>
+<div data-y="8800" data-x="1200" class="step">
+<h1><b style="color:red">この発表は個人の見識であり、所属する組織やこの勉強会の公式見解とは一切違います</b></h1>
+
+<p>だいたいオチがついたので、僕が現職よりずっと前に仕事で使った事のあるソフトウェアから、今現在使っている製品などについて、さとり目線からの選定理由や反省点等を話してこうと思います。</p>
+
+</div>
+<div class="step" data-x="2400" data-y="8800">
+<h2>(時間がないので割愛)</h2>
+
+</div>
+<div data-y="8800" class="step" data-x="3600">
+<h2>え?以外とすくないって?忘れてるのも結構あるけど<b>仕事では</b>色んな種類つかったから良いって事にはならないって事を遠回しに前座でやったので。。w</h2>
+
+</div>
+<div data-x="4800" class="step" data-y="8800">
+<h2>このセッションのまとめ</h2>
+
+<ul>
+<li>困った時に相談出来る人を作ろう</li>
+<li>自分より他人の方が優秀</li>
+<li>優秀な人とパーティ組むと捗ります</li>
+</ul>
+
+</div>
+<div data-y="9600" data-x="0" class="step">
+<h1>以上です</h1>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+<script>
+if ( !window.location.search.match(/print/) ) {
+    impress().init();
+}
+</script>
+<script>
+var codeTags = document.getElementsByTagName("code");
+for (var i = 0; i < codeTags.length; i++) {
+    codeTags[i].className = "prettyprint";
+}
+</script>
+
+</body>
+</html>
+
