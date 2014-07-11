@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div id="title" data-y="0" class="step" data-x="0">
+<h1>Better Groonga Replication</h1>
+
+<p><address>Yappo <br><br>MySQL Casual #6</address>
+<style>
+.step h1 {
+    font-size: 60px;
+    line-height: 1.2em;
+    padding-bottom: 15px;
+}.step h2 {
+    font-size: 50px;
+    line-height: 1.1em;
+    padding-bottom: 15px;
+}.step h3 {
+    font-size: 40px;
+    line-height: 1.1em;
+    padding-bottom: 10px;
+}.step code {
+    font-family: monospace;
+    font-size: 0.5em;
+    line-height: 0;
+}.step {
+    line-height: 0.95;
+}
+</style></p>
+
+</div>
+<div data-x="1200" class="step" data-y="0">
+<h1>今日の概要</h1>
+
+<p>僕が MySQL に頼らずに Groonga で replication 構成を作った理由と実装を紹介します</p>
+
+</div>
+<div data-x="2400" class="step" data-y="0">
+<h2>10年くらい前の昔話</h2>
+
+<p><img src="imgs/yappo-senna.png" width="80%" /></p>
+
+<p>ガラゲー用の検索サイトやってて Senna + MySQL 頑張ってた</p>
+
+</div>
+<div data-x="3600" data-y="0" class="step">
+<h2>大昔は Senna を使っていた</h2>
+
+<ul>
+<li>MySQL バインディング便利</li>
+<li>めちゃくちゃバギーだったからパッチ書きまくった</li>
+<li>開発者が親切</li>
+</ul>
+
+</div>
+<div data-x="4800" class="step" data-y="0">
+<h2>Senna + MySQL を使うにはコツがあった</h2>
+
+<ul>
+<li>開発者が使ってない使い方はしない</li>
+<li>fulltext index は頻繁に更新しない</li>
+<li>通常の MySQL の用途としては使わない威</li>
+<li>OFFSET 100000 LIMIT 10 とかで10行しか fetch しない用にするパッチ書いたり</li>
+</ul>
+
+</div>
+<div data-x="0" data-y="800" class="step">
+<h2>安定運用方法</h2>
+
+<ul>
+<li>database を作る</li>
+<li>クローラを回して検索用データを insert しまくる</li>
+<li>URL 別のスコアを計算する</li>
+<li>スコアを基準に検索用のテーブルを ALTER TABLE search_data ORDER BY score とかする(これするとテーブルのレコードが物理的に score 順に並び変わる、ようするに SELECT で ORDER BY しなくてもスコア順の結果が取れるようになる)</li>
+<li>検索させたいテキストが入ったカラムに fulltext index 張る</li>
+<li>データ差し替えたいときは、またデータベース作り直しで UPDATE/DELETE しない</li>
+</ul>
+
+</div>
+<div data-x="1200" data-y="800" class="step">
+<h2>昔話</h2>
+
+<p>あんまり今は役にたたない話ここまで</p>
+
+</div>
+<div data-y="800" class="step" data-x="2400">
+<h2>ここ数年以内の話</h2>
+
+<p>とある事で全文検索が必要な感じになった。(この会場で言う事じゃないけど)JVM で動いている物を安心して使う気にならないので消去法で Groonga を使おうと思った(一応同僚も使ってたし)</p>
+
+</div>
+<div data-x="3600" class="step" data-y="800">
+<h2><img src="imgs/naniburo.jpg" width="10%" /> ＜ MySQL のストレージエンジンで使ってよ(超要約)</h2>
+
+</div>
+<div data-y="800" class="step" data-x="4800">
+<h2><img src="imgs/yappo.png" width="10%" /> ＜ Groonga は信用しようって気にはなれるけど with MySQL は信用無理！(過去の経験的に)(超要約)</h2>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2><img src="imgs/naniburo.jpg" width="10%" /> ＜ じゃぁ困らない感じにしといてよ(超要約)</h2>
+
+</div>
+<div data-x="1200" data-y="1600" class="step">
+<h2>って事で Groonga 単体でサービスを作る事にした</h2>
+
+</div>
+<div data-x="2400" data-y="1600" class="step">
+<h2>Groong + MySQL の利点</h2>
+
+<ul>
+<li>replication 超楽</li>
+<li>matsunobu さんの MHA が使える</li>
+<li>DBI とかで検索クエリ投げれるので言語から使いやすい</li>
+</ul>
+
+</div>
+<div data-x="3600" data-y="1600" class="step">
+<h2>Groong + MySQL の欠点</h2>
+
+<ul>
+<li>闇が深い</li>
+</ul>
+
+</div>
+<div data-x="4800" class="step" data-y="1600">
+<h2>Groonga 単独の欠点</h2>
+
+<ul>
+<li>れぷりけーしょんどうするの？</li>
+</ul>
+
+</div>
+<div data-x="0" data-y="2400" class="step">
+<h2>無ければ作ったら良いよ</h2>
+
+<p>という事で、複数の Groonga Server に更新クエリを投げる為の Groonga Proxy Server を作りました。</p>
+
+<p>概念的には pgpool のレプリケーション機能っぽい感じで application は Groonga Proxy Server に対して更新クエリを投げると backend のリアルな Groonga Server にクエリを中継してくれる君だった。</p>
+
+</div>
+<div data-y="2400" class="step" data-x="1200">
+<h2><span style="color:red">だがしかし！障害のノードの対処やスケールアウト戦略どうするの！！？？！</span></h2>
+
+<p>クエリを proxy してるだけだから、実際に運用する事が不可能ってのが作ってみて学びありました。</p>
+
+</div>
+<div data-x="2400" data-y="2400" class="step">
+<h2><img src="imgs/yappo.png" width="10%" /> ＜ どうしようooえもん〜</h2>
+
+</div>
+<div class="step" data-y="2400" data-x="3600">
+<h2><img src="imgs/naniburo.jpg" width="10%" /> ＜ ちょっとまって</h2>
+
+</div>
+<div data-y="2400" class="step" data-x="4800">
+<h2><img src="imgs/yappo.png" width="10%" /> ＜ わっふるわっふる</h2>
+
+</div>
+<div class="step" data-y="3200" data-x="0">
+<h2><img src="imgs/naniburo.jpg" width="10%" /> ＜ binlog みたいな仕組みにしたらどう?</h2>
+
+</div>
+<div class="step" data-y="3200" data-x="1200">
+<h2><img src="imgs/yappo.png" width="10%" /> ＜ ！！！！１</h2>
+
+</div>
+<div class="step" data-y="3200" data-x="2400">
+<h2>という事で良い感じの replication の仕組みができました</h2>
+
+</div>
+<div class="step" data-y="3200" data-x="3600">
+<h2>特徴</h2>
+
+<ul>
+<li>サーバ増設が簡単</li>
+<li>設定は極わずか</li>
+<li>追加で必要な daemon は無い</li>
+<li>Groonga のクラスタ内では master - slave という概念無し</li>
+<li>全 Groonga node が slave という形に近い</li>
+</ul>
+
+</div>
+<div data-y="3200" class="step" data-x="4800">
+<h2>システム概略</h2>
+
+<ul>
+<li>適当な MySQL の database に binlog table を作る(id, update_type(insert, update, delete), data(Groonga に送るクエリ情報))</li>
+<li>Groonga 側に slave_status table を作る (pos カラムを作って、ここに処理した binlog table の id を入れる)</li>
+<li>binlog table の id と slave_staus table の pos を比較して、処理してない binlog table の data を元にして update_type で指定したクエリを Groonga に投げる cron script</li>
+<li>cron script は、各 Groonga Server それぞれの中に仕込んでいて、各 Groonga Server は自立的に binlog の更新内容を適用していく</li>
+<li>他にも細かいエラー処理はしてる</li>
+</ul>
+
+</div>
+<div data-x="0" data-y="4000" class="step">
+<h2>概要図</h2>
+
+<p><img src="imgs/server.png" width="90%" /></p>
+
+<!--
+        +------------------------+
+        |     mysql server       |
+        +------------------------+
+          |         |         |
++-----------+ +-----------+ +-----------+ --+
+| Groonga   | | Groonga   | | Groonga   |   |
+|  Server A | |  Server B | |  Server X | Z |
++-----------+ +-----------+ +-----------+ --+
+
+-->
+
+</div>
+<div data-x="1200" data-y="4000" class="step">
+<h2>簡単なサーバ増設フロー</h2>
+
+<ul>
+<li>各 Groonga Server たちはどこかのレイヤーでバランシングしてる</li>
+<li>増設したい時は、どこかのノードをバランス対象からはずす</li>
+<li>はずしたら cron や groonga 等を止める</li>
+<li>一時的にはずしてるノードから新規サーバにデータをコピーする</li>
+<li>もろもろ起動する</li>
+<li>各ノードが binlog の更新が追いついた感じになったらバランシング対象に戻す</li>
+</ul>
+
+</div>
+<div data-x="2400" data-y="4000" class="step">
+<h2>各ノードが処理した binlog の場所を個別で覚えているので、同期とかを気にせず増設していけて便利</h2>
+
+</div>
+<div class="step" data-y="4000" data-x="3600">
+<h2>FAQ</h2>
+
+<p>Q. なぜ Droonga を使わなかったの?
+<br><br><br>
+A. なんか、、、すごく、、、おっきかったです。。。</p>
+
+</div>
+<div data-x="4800" data-y="4000" class="step">
+<h2>まとめ</h2>
+
+<ul>
+<li>いまのところ安定した運用が出来てます</li>
+<li>自前で daemon 書くと運用が恐いので、なるべく既存の仕組みだけで HA 確保できる</li>
+<li>こういう特種な仕組みを作ったら障害対応などのオペレーションのドキュメントはちゃんと書く(書いた)</li>
+<li>困ったら優秀な人に泣きつけ</li>
+</ul>
+
+</div>
+<div class="step" data-y="4800" data-x="0">
+<h1>以上です</h1>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
