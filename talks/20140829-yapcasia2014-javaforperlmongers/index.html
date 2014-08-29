@@ -1,0 +1,542 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div data-y="0" id="title" data-x="0" class="step">
+<h1>Java For<br>Perl Mongers</h1>
+
+<p><address>Yappo@YAPC::Asia 2014</address>
+<style>
+.step h1 {
+    font-size: 60px;
+    line-height: 1.2em;
+    padding-bottom: 15px;
+}.step h2 {
+    font-size: 50px;
+    line-height: 1.1em;
+    padding-bottom: 15px;
+}.step h3 {
+    font-size: 40px;
+    line-height: 1.1em;
+    padding-bottom: 10px;
+}.step code {
+    font-family: monospace;
+    font-size: 0.5em;
+    line-height: 0;
+}.step {
+    line-height: 0.95;
+}
+</style></p>
+
+</div>
+<div class="step" data-x="1200" data-y="0">
+<h1><b style="color:red">この発表は個人の見識であり、所属する組織やこの勉強会の公式見解とは一切違います</b></h1>
+
+</div>
+<div data-x="2400" data-y="0" class="step">
+<h2>自己紹介</h2>
+
+<p><img src="imgs/yappo.png" /></p>
+
+</div>
+<div data-y="0" data-x="3600" class="step">
+<h2>みなさん YAPC の折り返しにきてるけど楽しんでますかー?</h2>
+
+</div>
+<div class="step" data-x="4800" data-y="0">
+<h2>１，２，３</h2>
+
+<p>YAPC 大好き!! (c) daisuke maki</p>
+
+</div>
+<div class="step" data-y="800" data-x="0">
+<h2>僕の本日の予定</h2>
+
+<ul>
+<li>10:00 YAPC::Asia 2014</li>
+<li>15:30 会社@渋谷</li>
+<li>16:30 YAPC::Asia 2014</li>
+<li>18:00 会社@渋谷</li>
+<li>21:30 YAPC::Asia 2014 @HUB
+<br><br><br>
+こんな僕を助けてくれる人、会社のホームページにエントリフォームあるので真面目に募集してください！</li>
+</ul>
+
+</div>
+<div class="step" data-y="800" data-x="1200">
+<h2>なんでこういうトークをしようとしたか</h2>
+
+<p>についてはなす。
+今はスマホの時代だから perl だけ知ってればいいと思ってるエンジニアとか役に立たない。
+perl, javascript, objective-c, java, swift...
+小さいスタートアップだったら server side は one languagen でいいけど
+今の時代あっというまにサービスの規模がでかくなる -> server side の言語の種類がなぜか増える -> api 通信とかで他言語のシステムと連携する必要がある -> 問題があった時に相手のコードとか見て問題の対処が出来るようなエンジニアじゃ無いとこの先つらい -> perl しか出来ないと未来が無い</p>
+
+<p>プログラム言語どころか、今のサービスは突然世界規模になったりする、結果的に世界中にエンジニアと仕事する必要がある、まぁ perl とかやったこと無い国の人がおおくて、 php とか java とか -> 相手が理解出来るコードを見せる必要がある</p>
+
+<p>結局このへんってエンジニアとしてのコミュニケーション力が求められてるとおもうんですよね。
+使ってる言語のボーダーを越えたり国のボーダーを簡単に飛び越えられる能力が求められてきている。</p>
+
+<p>そういう話を yapc でして見たかったんだけど、いいテーマがあんまり思い浮かばなくて端的に解りやすいボーダーとして今回 java を選んだんだけど、結果的に炎上してたり世の中むづかしいですね。</p>
+
+</div>
+<div data-y="800" data-x="2400" class="step">
+<h2>みたいな意識高い話でもしようとしたけど、午前中にインフラの人達が宇宙レベルの意識高い話をしててお腹いっぱいになったので、全部書き換えましたごめんんささい</h2>
+
+</div>
+<div data-x="3600" data-y="800" class="step">
+<h2>という事で本題に進もうとおもうのですが</h2>
+
+</div>
+<div class="step" data-y="800" data-x="4800">
+<h2>本日の概要</h2>
+
+<p><img src="imgs/abstract.png" /></p>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2><b style="color:red">*注意事項 スピーカーの事情によりもっと面白いネタが思いついた場合や習得状況により、内容が変更になる可能性があります</b></h2>
+
+</div>
+<div data-x="1200" data-y="1600" class="step">
+<h2>　</h2>
+
+<p><img src="imgs/rm_shinchoku.png" /></p>
+
+</div>
+<div data-y="1600" data-x="2400" class="step">
+<h2>ちゃんと Java を覚えようとしたんだけど</h2>
+
+</div>
+<div data-x="3600" data-y="1600" class="step">
+<h2>なんか Java って普通すぎて。。。</h2>
+
+</div>
+<div class="step" data-x="4800" data-y="1600">
+<h2>皆さんに質問です</h2>
+
+</div>
+<div class="step" data-x="0" data-y="2400">
+<h2>このコードは何で書かれてますか?</h2>
+
+<p><img src="imgs/Q1-code.png" /></p>
+
+</div>
+<div data-x="1200" data-y="2400" class="step">
+<h2>Perl だと思う人?</h2>
+
+</div>
+<div data-y="2400" data-x="2400" class="step">
+<h2>Java だと思う人?</h2>
+
+</div>
+<div data-x="3600" data-y="2400" class="step">
+<h2>なるほど</h2>
+
+</div>
+<div class="step" data-y="2400" data-x="4800">
+<h2>正解は...</h2>
+
+</div>
+<div data-x="0" data-y="3200" class="step">
+<h2>Java</h2>
+
+<p><img src="imgs/Q1-java.png" /></p>
+
+</div>
+<div class="step" data-x="1200" data-y="3200">
+<h2>そして</h2>
+
+</div>
+<div data-x="2400" data-y="3200" class="step">
+<h2>Perl</h2>
+
+<p><img src="imgs/Q1-perl.png" /></p>
+
+</div>
+<div data-y="3200" data-x="3600" class="step">
+<h2>ね? Perl の人達が Java 学ぼうとしても、既に新しく覚える事無くて進捗ダメなんですよ。。。</h2>
+
+</div>
+<div class="step" data-y="3200" data-x="4800">
+<h2>このまま次に進むのもアレなので Perl の不思議な部分の解説を。。。</h2>
+
+</div>
+<div class="step" data-x="0" data-y="4000">
+<h2>'booleanValue = true;' について</h2>
+
+<p><img src="imgs/Q1-perl.png" /></p>
+
+</div>
+<div class="step" data-y="4000" data-x="1200">
+<h2>lvalue attribute</h2>
+
+<ul>
+<li>Perl には変数や関数に特殊な属性を与える attribute という機能がある</li>
+<li>sub booleanValue:lvalue {} の :lvalue の部分が属性(:は無視して良い)</li>
+<li>lvalue は式の左辺に使う事が出来る関数(超要約)</li>
+<li>lvalue の関数の最後に書かれた SCALAR 変数に対して代入可能</li>
+</ul>
+
+<p>なので</p>
+
+<pre><code>booleanValue = $x; とかすると $booleanValue に $x が代入される
+</code></pre>
+
+</div>
+<div class="step" data-y="4000" data-x="2400">
+<h2>'System.out.println(msg);' について</h2>
+
+<p><img src="imgs/Q1-perl.png" /></p>
+
+</div>
+<div class="step" data-x="3600" data-y="4000">
+<h2>'System.out.println(msg);' を Perl はどう解釈しているか</h2>
+
+<p>Perl がコードをどのようにして解釈しているかを知る事が出来る B::Deparse というモジュールがあります。(検索キーワード: dankogai B::Deparse)</p>
+
+<pre><code>perl -MO=Deparse -e 'sub System { "1" }; sub out { "2" }; sub println { print "$_[0]\n"; "3" }; System.out.println("x")' 
+</code></pre>
+
+<p>このようにして Perl を実行すると System.out.println('x') に関わるコードを Perl はどう解釈しているか解るのです。</p>
+
+</div>
+<div data-x="4800" data-y="4000" class="step">
+<h2>ただの文字列連結された文字列として評価されてた</h2>
+
+<p><img src="imgs/Q1-perl-println.png " /></p>
+
+<p>'123' という文字列を作っただけでした。</p>
+
+</div>
+<div data-y="4800" data-x="0" class="step">
+<h2>true/false/throw/new は普通の Perl ですよね?</h2>
+
+<p><img src="imgs/Q1-perl.png" /></p>
+
+</div>
+<div data-x="1200" data-y="4800" class="step">
+<h2>このように、基本的にはどのようなプログラム言語も大差はない</h2>
+
+</div>
+<div class="step" data-x="2400" data-y="4800">
+<h2>僕が Java Java 言い出したきっかけ</h2>
+
+</div>
+<div data-y="4800" data-x="3600" class="step">
+<h2>!!! 突然の Java !!!</h2>
+
+<p><img src="imgs/JQ.jpg" /></p>
+
+</div>
+<div class="step" data-y="4800" data-x="4800">
+<h2>という事で Java やろうとしていて、実際見聞きしてきたりした事を軽く share してみます</h2>
+
+</div>
+<div class="step" data-x="0" data-y="5600">
+<h2>Java の嫌な所</h2>
+
+</div>
+<div class="step" data-y="5600" data-x="1200">
+<h2>JVM が重い</h2>
+
+</div>
+<div class="step" data-x="2400" data-y="5600">
+<h2>JVM が重い</h2>
+
+<p><img src="imgs/xburo.jpg " /><br />
+きっと、なんとかしてくれる。。。(希望)</p>
+
+</div>
+<div data-x="3600" data-y="5600" class="step">
+<h2>重量級のライブラリを沢山使わないといけない</h2>
+
+<p>エンタープライズ文化だからしょうがない。嫌なら作ったらいい。</p>
+
+</div>
+<div class="step" data-x="4800" data-y="5600">
+<h2>コードが冗長だ</h2>
+
+<p>冗長だからこそ、コンパイル出来たら動くコードだと言うのが保証出来るんだし一長一短かと。
+あと IDE 便利ですよ</p>
+
+</div>
+<div data-y="6400" data-x="0" class="step">
+<h2>ファイルが増えまくる</h2>
+
+<p>1 file/1 class しか書けないの、僕の今の技能レベルだと不満なんですが IDE 便利ですよ</p>
+
+</div>
+<div class="step" data-x="1200" data-y="6400">
+<h2>emacs で Java 書きたいんだけど</h2>
+
+<p>Eclipse で emcas 互換キーバインドあるし IDE 便利ですよ</p>
+
+</div>
+<div class="step" data-x="2400" data-y="6400">
+<h2>IDE が重い</h2>
+
+<p>仕事で使ってるなら最新の MBA とか買うと快適ですよ＾＾</p>
+
+</div>
+<div class="step" data-y="6400" data-x="3600">
+<h2>cpanm とか carton がない</h2>
+
+<p>Google + jar download + IDE の jar import でやったりクラスパス通ってるところにおいといたらいいらしい</p>
+
+</div>
+<div data-x="4800" data-y="6400" class="step">
+<h2>maven central reposytory がクソだ</h2>
+
+<p>って gfx が言ってた気がするけど、おれまだそこまで出来てない。
+github に個別に立ててる人とかもいるみたいだね。</p>
+
+</div>
+<div class="step" data-x="0" data-y="7200">
+<h2>情報をググっても DoJa に毛が生えたようなサンプルコードしか出てこない</h2>
+
+<p>Perl Monger にそれ言う資格があるとでも?</p>
+
+</div>
+<div class="step" data-y="7200" data-x="1200">
+<h2>Java の良い所</h2>
+
+</div>
+<div data-y="7200" data-x="2400" class="step">
+<h2>書ける人が多い</h2>
+
+<ul>
+<li>世界的に見ても書ける人が多いので、圧倒的に採用に有利なんじゃないの？しらんけど</li>
+<li>LL とか書ける人にとっても言語的な差異は少ないので潜在ユーザは多いし</li>
+<li>糞コード書く人は何処にでも居るので、そっちのデメリットは割愛</li>
+</ul>
+
+</div>
+<div class="step" data-x="3600" data-y="7200">
+<h2>type safe</h2>
+
+<ul>
+<li>型システム的に間違った型への代入ができない</li>
+<li>メソッドシグニチャと違う呼び出しができない</li>
+<li>コンパイルが通る事 = 正しく動くコードである ※ただし</li>
+</ul>
+
+</div>
+<div class="step" data-y="7200" data-x="4800">
+<h2>Perl でも頑張ったら静的にチェックできるよ</h2>
+
+<p><img src="imgs/perl-typesafe-modeoki.png" /></p>
+
+</div>
+<div data-y="8000" data-x="0" class="step">
+<h2>正直こんなの誰も使わないw</h2>
+
+<ul>
+<li>一応コンパイルタイムで hash のアクセス可能な key のチェックしてくれる</li>
+<li>my $foo2 = $foo; したら $foo2 経由で弄り放題</li>
+<li>Danga::Socket のコード見ると、こういうの使われてる</li>
+<li>see also perldoc fields</li>
+</ul>
+
+</div>
+<div class="step" data-x="1200" data-y="8000">
+<h2>Java に話をもどして。。</h2>
+
+</div>
+<div data-y="8000" data-x="2400" class="step">
+<h2>やっぱり ORM とかで効果たかい</h2>
+
+<ul>
+<li>table 名や column 名の typo する事がなくなる</li>
+<li>IDE が全て補完や警告してくれる</li>
+<li>全てを無視してコンパイルしても失敗するから、うっかりバグッた SQL を本番で投げなくなる</li>
+</ul>
+
+</div>
+<div class="step" data-y="8000" data-x="3600">
+<h2>JSON とかも安全に扱える</h2>
+
+<p><img src="imgs/jackson-ok.png" /></p>
+
+</div>
+<div data-x="4800" data-y="8000" class="step">
+<h2>うっかり型が間違ってたら例外も飛ぶ</h2>
+
+<p><img src="imgs/jackson-ng.png" /></p>
+
+</div>
+<div data-x="0" data-y="8800" class="step">
+<h2>perl って json たいへんですよね</h2>
+
+<p>int/str
+boolean</p>
+
+</div>
+<div class="step" data-y="8800" data-x="1200">
+<h2>でも perl だと一発で JSON 作れてべんりーだったり</h2>
+
+<pre><code>my $json = JSON::XS-&gt;new-&gt;ascii-&gt;encode(+{
+    id    =&gt; 1,
+    name  =&gt; 'Yappo',
+    yappo =&gt; 'JSON::XS::true,
+});
+</code></pre>
+
+<p>Java でもやれるんだろうけど type safe の恩恵無くなって Java で書く意味皆無だけど。。。</p>
+
+<p>HASH/ARRAY みたいな物を簡単に構築して利用出来るのが LL の利点ですよねー(型推論の話はおいとく)</p>
+
+</div>
+<div data-x="2400" data-y="8800" class="step">
+<h2>Java にはとつぜんのぬるぽあったりするじゃん?</h2>
+
+</div>
+<div class="step" data-y="8800" data-x="3600">
+<h2>でも perl でも</h2>
+
+<pre><code>my $row = $tng-&gt;single( table =&gt; { id =&gt; $id } );
+say $row-&gt;name;
+</code></pre>
+
+<p>みたいなコードで $row あるかどうかチェックしないで死ぬコードとかうっかり書く人多くて、そこ言語の差ないよね。</p>
+
+</div>
+<div data-y="8800" data-x="4800" class="step">
+<h2>Java の利点っていっても、ぶっちゃけ普通の言語だからあんまり思いつかなかったのでした</h2>
+
+</div>
+<div class="step" data-x="0" data-y="9600">
+<h2>自分の置かれている状況や環境によって道具を選ぶのがプロなので、僕はたまたま Java Java 言ってるだけですね</h2>
+
+</div>
+<div data-y="9600" data-x="1200" class="step">
+<h2>そういえば Java8 の話するとか言ってました</h2>
+
+</div>
+<div data-y="9600" data-x="2400" class="step">
+<h2>Stream API &amp; lambda</h2>
+
+<p><img src="imgs/java-streamapi.png" /></p>
+
+<pre><code>以下のように表示される
+filter: dan
+map: dan
+filter: the
+map: the
+filter: kogai
+map: kogai
+</code></pre>
+
+</div>
+<div class="step" data-y="9600" data-x="3600">
+<h2>Stream API</h2>
+
+<p><img src="imgs/java-streamapi.png" /></p>
+
+<ul>
+<li>stream object を作る</li>
+<li>fliter, map 等の中間操作</li>
+<li>sum, toArray, forEach 等の終端操作</li>
+<li>終端操作が無いと中間操作は実行されない</li>
+<li>中間操作を複数書いてもループは1回だけ回るよう最適化</li>
+</ul>
+
+</div>
+<div data-y="9600" data-x="4800" class="step">
+<h2>callback が必要なコードは lambda を使えばすっきり</h2>
+
+<p><img src="imgs/lambda-1.png" /></p>
+
+</div>
+<div data-y="10400" data-x="0" class="step">
+<h2>IDE には lambda から Anon Class に置き換える変換機能もついてて</h2>
+
+<p><img src="imgs/lambda-2.png" /></p>
+
+</div>
+<div data-y="10400" data-x="1200" class="step">
+<h2>一発で古き Java Style になる</h2>
+
+<p><img src="imgs/lambda-3.png" /></p>
+
+</div>
+<div class="step" data-x="2400" data-y="10400">
+<h2>逆に lambda にも一発でおk</h2>
+
+<p><img src="imgs/lambda-4.png" /></p>
+
+</div>
+<div class="step" data-x="3600" data-y="10400">
+<h2>最近はぞんがい waf とかも薄いのある</h2>
+
+<p>とある amon2 っての作った人が偶然いま作ってる java の waf が Perl Monger にはわかりやすい気がする。
+まだ使った事無いけど。</p>
+
+</div>
+<div data-x="4800" data-y="10400" class="step">
+<h2>router</h2>
+
+<p><img src="imgs/avans-router.png" /></p>
+
+</div>
+<div class="step" data-x="0" data-y="11200">
+<h2>controller</h2>
+
+<p><img src="imgs/avans-controller.png" /></p>
+
+</div>
+<div class="step" data-x="1200" data-y="11200">
+<h2>controller</h2>
+
+<p><img src="imgs/avans-controller2.png" /></p>
+
+</div>
+<div class="step" data-y="11200" data-x="2400">
+<h2>アノテーションとか使ってないってさ</h2>
+
+<p>perl の attribute みたいなもの。 perl のは attribute つかったコードをデバッグするのとかコード追いかけるの大変だけど java のアノテーションも似てるので、おっかけるの大変らしいね。</p>
+
+</div>
+<div data-y="11200" data-x="3600" class="step">
+<h2>それでも我々は Perl を使っていた</h2>
+
+<p>ここ最後のスライドなので、時間見ながら喋る</p>
+
+</div>
+<div class="step" data-y="11200" data-x="4800">
+<h2>以上です</h2>
+
+<p>何か質問は?</p>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
