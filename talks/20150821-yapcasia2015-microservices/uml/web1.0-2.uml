@@ -1,0 +1,36 @@
+@startuml ../imgs/web1.0-2.png
+
+package "local" {
+  () JEdit as jedit
+  [ form.cgi ] as cgi
+  () "FTP Soft" as ftp
+
+  jedit -> cgi : edit
+  cgi -> ftp
+
+  () JEdit as jedit2
+  [ index.html ] as lindex
+  () "FTP Soft" as ftp2
+
+  jedit2 -> lindex : update
+  lindex -> ftp2
+}
+
+cloud {
+  package "www.example.com/" {
+    [ /home/web/html/index.html ] as sindex
+  }
+
+  package "new-service.example.com/" {
+    [ /home/web/html/new-service ] as putto
+  }
+}
+
+ftp -> putto : FTP PUT
+ftp -> putto : chmod 0755
+
+ftp2 -> sindex : FTP PUT
+
+sindex -> putto : HTTP POST
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml ../imgs/web2.0-1.png
+
+cloud "Own iDC" {
+  package "www.example.com" {
+    [ App1 ] as app1
+  }
+  package "www.example.org" {
+    [ App2 ] as app2
+  }
+}
+
+cloud "Hatena" {
+  package "Mackernel" {
+    [ API ] as mackernel
+  }
+  package "Bookmark" {
+    [ API ] as bookmark
+  }
+  package "OAuth hatena" {
+    [ API ] as hoauth
+  }
+}
+
+cloud "Mixi" {
+  package "OAuth mixi" {
+    [ API ] as moauth
+  }
+}
+
+cloud "FreakOut" {
+  package "AD Server" {
+    [ API ] as ad
+  }
+}
+
+app1 -> ad
+app1 -> mackernel
+
+app2 -> ad
+app2 -> mackernel
+app2 -> bookmark
+app1 -> hoauth
+app1 -> moauth
+
+@enduml

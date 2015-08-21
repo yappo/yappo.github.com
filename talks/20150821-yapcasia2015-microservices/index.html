@@ -1,0 +1,628 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
+    <link href="css/impress.css" rel="stylesheet" />
+</head>
+<body>
+<div id="impress" class="impress-not-supported">
+    <div class="fallback-message">
+        <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+        <p>For the best experience please use the latest <b>Chrome</b> or <b>Safari</b> browser. Firefox 10 (to be released soon) will also handle it.</p>
+    </div>
+
+<div data-x="0" data-y="0" id="title" class="step">
+<h1>大規模でも小中規模サービスでも捗る microservices な Web サービスのつくりかた How to develop by microservices way</h1>
+
+<p><address>Yappo@Shibuya.java<br><br>YAPC::Asia Tokyo 2015</address>
+<style>
+.step h1 {
+    font-size: 60px;
+    line-height: 1.2em;
+    padding-bottom: 15px;
+}.step h2 {
+    font-size: 50px;
+    line-height: 1.1em;
+    padding-bottom: 15px;
+}.step h3 {
+    font-size: 40px;
+    line-height: 1.1em;
+    padding-bottom: 10px;
+}.step code {
+    font-family: monospace;
+    font-size: 0.5em;
+    line-height: 0;
+}.step pre {
+    line-height: 0.8;
+}
+</style></p>
+
+</div>
+<div class="step" data-x="1200" data-y="0">
+<h2>Self introduction</h2>
+
+<ul>
+<li>Yappo</li>
+<li>JSON Engineer</li>
+<li>around 16-18 years in a web developer career</li>
+<li>use the Java for one month</li>
+</ul>
+
+</div>
+<div class="step" data-x="2400" data-y="0">
+<h2>Don't on this このセッションでやらないこと</h2>
+
+<ul>
+<li>Management for human resource 組織論</li>
+<li>Fund 資金</li>
+</ul>
+
+</div>
+<div data-y="0" data-x="3600" class="step">
+<h2>Merit of microservice</h2>
+
+<ul>
+<li>scale for service</li>
+<li>can develop it naturally</li>
+<li>focus to simple function</li>
+</ul>
+
+</div>
+<div data-y="0" data-x="4800" class="step">
+<h2>Demerit of microservice</h2>
+
+<ul>
+<li>many server components</li>
+<li>many servers</li>
+<li>many repositories</li>
+<li>black box</li>
+</ul>
+
+</div>
+<div data-x="0" data-y="800" class="step">
+<h2>microservices is Buzz word!</h2>
+
+<p>Actually that way is basic way for us / 実は普通の開発手法なんです<br>
+I will clarify it in this session / このセッションで説明します</p>
+
+</div>
+<div class="step" data-x="1200" data-y="800">
+<h2>In the world before Web 2.0</h2>
+
+<p>CGI / FORM tag as a Web API</p>
+
+</div>
+<div data-y="800" data-x="2400" class="step">
+<h2>I begin a talk of Perl4(a little time)</h2>
+
+<p>裏で Perl6 の話してるので、すこし Perl4 時代の話をします。</p>
+
+</div>
+<div data-x="3600" data-y="800" class="step">
+<h2>new component deployment</h2>
+
+<p>限定キャンペーンの為に mkdir して FTP して FTP soft で chmod 0755 して release<br>
+<img src="imgs/web1.0-1.png"></p>
+
+</div>
+<div data-x="4800" data-y="800" class="step">
+<h2>scale out</h2>
+
+<p>スケール戦略は、新しいレン鯖を借りれば OK
+<img src="imgs/web1.0-2.png"></p>
+
+</div>
+<div class="step" data-y="1600" data-x="0">
+<h2>Web 2.0 as a microservices</h2>
+
+<p>Web Service API これらは要するに microservice の考えそのものです。
+それが中にあるのか、外にあるのか</p>
+
+<p><img src="imgs/web2.0-1.png"></p>
+
+</div>
+<div class="step" data-y="1600" data-x="1200">
+<h1>Back to the our service</h1>
+
+<p>本題に戻りましょ</p>
+
+</div>
+<div class="step" data-x="2400" data-y="1600">
+<h1>For small services</h1>
+
+</div>
+<div data-x="3600" data-y="1600" class="step">
+<h2>Demerit on a small service</h2>
+
+<ul>
+<li>many server components</li>
+<li>many servers</li>
+<li>many repositories</li>
+</ul>
+
+<p>You should do the monolithic architecture on a small service
+小さいサービスでは、モノリシックなコードで運用すべき</p>
+
+</div>
+<div data-x="4800" data-y="1600" class="step">
+<h2>But can do on a small service for microservices</h2>
+
+<p>それでもできることある</p>
+
+</div>
+<div class="step" data-y="2400" data-x="0">
+<h2>Let's go up the stairs</h2>
+
+<ul>
+<li>1st step. to write a model</li>
+<li>2nd step. to use a job worker</li>
+<li>3rd step. to separate a logic on the service</li>
+</ul>
+
+<p>最初は model で書く、そのうち分離が必要になったら model を別サーバの API の client にして、元からあった model の実装を別サーバ上で提供する</p>
+
+</div>
+<div data-x="1200" data-y="2400" class="step">
+<h1>MVC structure as a microservices</h1>
+
+</div>
+<div data-y="2400" data-x="2400" class="step">
+<h2>MVC</h2>
+
+<p>Please write by the common way</p>
+
+<pre><code>package Amon2Proj::Web::C::API;
+...
+sub foo {
+  my($class, $c) = @_;
+  my $data = Amon2Proj::M::Foo-&gt;bar({ ... });
+  $c-&gt;render_json($data);
+}
+package Amon2Proj::M::Foo;
+sub bar {
+  my($class, $input) = @_;
+  ...
+  return +{ ... };
+}
+</code></pre>
+
+</div>
+<div class="step" data-x="3600" data-y="2400">
+<h2>Job Queue/Worker model</h2>
+
+<ul>
+<li>cron</li>
+<li>TheSchwartz</li>
+</ul>
+
+</div>
+<div data-x="4800" data-y="2400" class="step">
+<h2>cron</h2>
+
+<pre><code>* * * * * setlock /tmp/x.lk cron/batch-foo.pl
+
+# in batch.pl
+Amon2Proj::Batch::Foo-&gt;run;
+# Amon2Proj-&gt;bootstrap and some tasks
+</code></pre>
+
+</div>
+<div class="step" data-x="0" data-y="3200">
+<h2>TheSchwartz enqueue</h2>
+
+<pre><code>package Amon2Proj::M::Foo;
+sub bar {
+  my($class, $input) = @_; # you should validation to $input
+  $job = TheSchwartz::Job-&gt;new(
+    funcname =&gt; 'ImageResize',
+    uniqkey  =&gt; $input-&gt;{item_id},
+    arg      =&gt; [ foo =&gt; 'bar' ],
+  );
+  $client-&gt;insert($job);
+  return 1;
+}
+</code></pre>
+
+</div>
+<div class="step" data-x="1200" data-y="3200">
+<h2>TheSchwartz worker</h2>
+
+<pre><code>package ImageResize {
+  use base qw( TheSchwartz::Worker );
+  sub work {
+    my($class, $job) = @_;
+    my $item_id = $job-&gt;uniqkey;
+    # to image resize
+    $job-&gt;completed();
+  }
+}
+package main;
+my $client = TheSchwartz-&gt;new( databases =&gt; $DSN );
+$client-&gt;can_do('ImageResize');
+$client-&gt;work();
+</code></pre>
+
+</div>
+<div class="step" data-x="2400" data-y="3200">
+<h2>Take it easy, but please mind to common sense and good sense</h2>
+
+<p>The structure design of this stage is very important</p>
+
+<p>この初期段階の設計が一番大事なので、とてもよく考えて作ってください</p>
+
+</div>
+<div class="step" data-y="3200" data-x="3600">
+<h1>For middle scale services</h1>
+
+</div>
+<div class="step" data-x="4800" data-y="3200">
+<h2>What should we do on the middle?</h2>
+
+<p>中規模のサービスでとるべき戦略とは?</p>
+
+<ul>
+<li>Separation timing</li>
+<li>Plural projects management</li>
+</ul>
+
+</div>
+<div class="step" data-y="4000" data-x="0">
+<h2>Separation timing</h2>
+
+<p>When do you separate components from the core service? いつ分離しよう?</p>
+
+<p>特定の機能専用のサーバを作るタイミング
+どういう時に別サーバにするか？</p>
+
+<ul>
+<li>My co-worker need use my service components 他のサービスでも使いたい</li>
+<li>I want that my component provides for other developers 社外でも使って欲しい</li>
+<li>I want scale out</li>
+</ul>
+
+<p><!--
+ - 住所正規化処理を使ってるアプリケーションがあったけど、他のサービスでも使いたくなった場合、住所正規化処理だけ切り出して別サーバ化する</p>
+
+</div>
+<div data-y="4000" data-x="1200" class="step">
+<ul>
+<li>例えば外部向けの Open API で提供したら価値が上がりそうな機能をもってたら、それを切り出して、元のサービスは Open API に依存する
+--></li>
+</ul>
+
+</div>
+<div class="step" data-y="4000" data-x="2400">
+<h2>My way is the same as DRY programing</h2>
+
+<p>DRY の為にコードをコピペせずにメソッド化するのと同じで、複数のサービスで同じことをしなくても済むように、独立したサービスとして運用するのです。
+ただし一般ライブラリ単体で可能な機能だけを提供するサービスを作るのは無駄です<br></p>
+
+<p><br>eg. 電話番号フォーマット check API だけ作るとか</p>
+
+</div>
+<div class="step" data-x="3600" data-y="4000">
+<h2>Exception case</h2>
+
+<p>May you separate complex components by core service?
+メンテナンスに手間がかかるモジュールを利用するコンポーネントなどは独立すると捗る</p>
+
+<ul>
+<li>KENALL.csv (Japanese zip data file, monthly maintenance)</li>
+<li>Number::Phone::JP (monthly maintenance)</li>
+<li>Geocoder, etc...</li>
+</ul>
+
+<p>but thoese functions provided by popular Web Services. You can use it if your company's law be allowed.</p>
+
+</div>
+<div data-x="4800" data-y="4000" class="step">
+<h2>How do I run for plural projects management?</h2>
+
+<p>実質的に複数の service を抱えるので増える管理の手間をどう乗り越えるか?</p>
+
+</div>
+<div data-x="0" data-y="4800" class="step">
+<h2>Deploy method</h2>
+
+<p>Easy to deploy system is most important on this phase. you can choose the thin shell script system.</p>
+
+<p>このフェーズで一番大事なのは Deploy の簡単さ
+ rsync / remote shell 
+簡単な shell script でも OK</p>
+
+</div>
+<div class="step" data-x="1200" data-y="4800">
+<h2>Repository</h2>
+
+<ul>
+<li>In same repository? 既存のサービスの中でやる?
+<ul>
+<li>Amon2Proj::Web::Dispatcher</li>
+<li>Amon2Proj::API::Dispatcher</li>
+<li>Amon2Proj::ForAPI::Dispatcher</li>
+<li>Amon2Proj::BarAPI::Dispatcher</li>
+</ul></li>
+<li>Separate out? 分離する?</li>
+</ul>
+
+</div>
+<div data-y="4800" data-x="2400" class="step">
+<h2>FQDN/URL</h2>
+
+<ul>
+<li>FQDN Separation or same FQDN?</li>
+<li>Nginx chose backend server
+<ul>
+<li>https://example.com/api/foo/<em></li>
+<li>https://example.com/api/new-microservices-api/</em></li>
+</ul></li>
+<li>Sepatated
+<ul>
+<li>https://example.com/api/foo/<em></li>
+<li>https://new-microservices-api.example.com/api/</em></li>
+</ul></li>
+</ul>
+
+</div>
+<div data-y="4800" data-x="3600" class="step">
+<h2>You must have backward compatibility</h2>
+
+<p>後方互換性の確保をしないと困る</p>
+
+</div>
+<div class="step" data-y="4800" data-x="4800">
+<h2>JSON</h2>
+
+<p>Basically, we use HTTP-JSON API.</p>
+
+</div>
+<div data-y="5600" data-x="0" class="step">
+<h2>Amon2::Plugin::Web::JSON</h2>
+
+<pre><code># in Amon2Proj/Web.pm
+__PACKAGE__-&gt;load_plugins(
+  'Web::JSON' =&gt; { status_code_field =&gt; 'status' }
+);
+# in your
+package Amon2Proj::Web::C::API;
+sub foo {
+  my($class, $c) = @_;
+  $c-&gt;render_json(+{
+      status =&gt; 200, # create `X-API-Status: 200` response header
+      ...
+  });
+}
+</code></pre>
+
+</div>
+<div class="step" data-y="5600" data-x="1200">
+<h2>JSON::XS</h2>
+
+<pre><code>use JSON::XS;
+
+my $json = JSON::XS-&gt;new-&gt;ascii;
+my $json_data = $json-&gt;encode(+{
+  fooFount =&gt; $foo_count+0, # cast to IV (because sometime Perl cast to SV in internal)
+  isBar    =&gt; JSON::XS::true(),
+  name     =&gt; "$name",
+});
+
+$data =&gt; $json-&gt;decode($json_data);
+</code></pre>
+
+</div>
+<div data-x="2400" data-y="5600" class="step">
+<h2>Furl</h2>
+
+<pre><code>package Amon2Proj::M::Foo;
+use Furl::HTTP; use JSON::XS;
+sub bar {
+  my($class, $input) = @_; # you should validation to $input
+  my $json = JSON::XS-&gt;new-&gt;ascii-&gt;encode({ count =&gt; $input-&gt;{count} });
+  my $hirom = Furl::HTTP-&gt;new;
+
+  my(undef, $code, undef, $headers, $body) = $hirom-&gt;post(
+    'http://doraperson2015.yapcasia.org/vote/5',
+    [
+      'Content-Type'   =&gt; 'accplication/json',
+      'Content-Length' =&gt; length($json)
+    ],
+    $json
+  );
+  return $code == 200 ? 1 : 0;
+}
+</code></pre>
+
+</div>
+<div data-x="3600" data-y="5600" class="step">
+<h2>In Java8</h2>
+
+<ul>
+<li>avans
+<ul>
+<li>Perl monger friendly Web Application Framework</li>
+<li>near the Amon2</li>
+</ul></li>
+<li>tinyorm
+<ul>
+<li>near the Class:DBI and Teng</li>
+</ul></li>
+<li>Jackson
+<ul>
+<li>for the JSON</li>
+</ul></li>
+<li>mech2
+<ul>
+<li>near the Furl</li>
+</ul></li>
+</ul>
+
+</div>
+<div class="step" data-y="5600" data-x="4800">
+<h2>avans</h2>
+
+<pre><code>POST("/api/hoo")
+public WebResponse hooPost(@JsonParam HooPostReqestObject req) {
+  String name = req.getName();
+  ...
+  return renderJSON(200, new HooResponseObject("foo", 1, name));
+}
+</code></pre>
+
+<p>Very easy!</p>
+
+</div>
+<div data-x="0" data-y="6400" class="step">
+<h2>Service metrics</h2>
+
+</div>
+<div class="step" data-x="1200" data-y="6400">
+<h2>kurado</h2>
+
+<p><img src="imgs/kurado.png" width="80%"></p>
+
+</div>
+<div class="step" data-x="2400" data-y="6400">
+<h2>fluentd</h2>
+
+<p><img src="imgs/fluentd.png" width="80%"></p>
+
+</div>
+<div data-x="3600" data-y="6400" class="step">
+<h1>For big</h1>
+
+</div>
+<div class="step" data-y="6400" data-x="4800">
+<h2>Documantation</h2>
+
+<ul>
+<li>Wiki</li>
+<li>ERD</li>
+<li>UML
+<ul>
+<li>I like the PlantUML</li>
+</ul></li>
+</ul>
+
+</div>
+<div class="step" data-x="0" data-y="7200">
+<h2>❤️PlantUML</h2>
+
+<pre><code>@startuml ../imgs/web2.0-1.png
+
+cloud "Own iDC" {
+  package "www.example.com" {
+    [ App1 ] as app1
+  }
+  package "www.example.org" {
+    [ App2 ] as app2
+  }
+}
+
+cloud "Hatena" {
+  package "Mackernel" {
+    [ API ] as mackernel
+  }
+  package "Bookmark" {
+    [ API ] as bookmark
+  }
+  package "OAuth hatena" {
+    [ API ] as hoauth
+  }
+}
+</code></pre>
+
+</div>
+<div data-x="1200" data-y="7200" class="step">
+<h2>❤️PlantUML</h2>
+
+<pre><code>cloud "Mixi" {
+  package "OAuth mixi" {
+    [ API ] as moauth
+  }
+}
+
+cloud "FreakOut" {
+  package "AD Server" {
+    [ API ] as ad
+  }
+}
+
+app1 -&gt; ad
+app1 -&gt; mackernel
+
+app2 -&gt; ad
+app2 -&gt; mackernel
+app2 -&gt; bookmark
+app1 -&gt; hoauth
+app1 -&gt; moauth
+
+@enduml
+</code></pre>
+
+</div>
+<div class="step" data-x="2400" data-y="7200">
+<h2>❤️PlantUML</h2>
+
+<p><img src="imgs/web2.0-1.png"></p>
+
+</div>
+<div class="step" data-y="7200" data-x="3600">
+<h2>Why do you make to microservices?</h2>
+
+<ul>
+<li>For the general-purpose? 汎用的な機能のため？</li>
+<li>subsystem? サービスのサブシステムのため？</li>
+</ul>
+
+</div>
+<div class="step" data-x="4800" data-y="7200">
+<h2>Team buildling</h2>
+
+<ul>
+<li>Who is my service user?</li>
+<li>Which server connected to my server?</li>
+<li>Whom should I talk to when my service upgraded?</li>
+</ul>
+
+</div>
+<div class="step" data-y="8000" data-x="0">
+<h2>You will let an expert work</h2>
+
+<p>専門家がいるなら、その専門家に特定のサービスだけ作ってもらえばよい
+あなたが専門家なら、それをすればよい</p>
+
+</div>
+<div class="step" data-y="8000" data-x="1200">
+<h2>Last Summary</h2>
+
+<p>You should anytime write the good components!
+正しいコンポーネント化が重要</p>
+
+</div>
+<div class="step" data-x="2400" data-y="8000">
+<h1>Do you have any question?</h1>
+
+</div>
+
+
+    <div id="overview" class="step" data-x="3000" data-y="1500" data-scale="10">
+    </div>
+
+</div>
+
+<div class="hint">
+    <p>Use a spacebar or arrow keys to navigate</p>
+</div>
+<script>
+if ("ontouchstart" in document.documentElement) { 
+    document.querySelector(".hint").innerHTML = "<p>Tap on the left or right to navigate</p>";
+}
+</script>
+<script src="js/impress.js"></script>
+
+</body>
+</html>
+
